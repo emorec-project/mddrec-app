@@ -26,5 +26,7 @@ frontend-ts/node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-fronted-ts/node_modules/yaml/pair.js
 fronted-ts/node_modules
+*.pyc
+*.sqlite3
+fronted-ts/package-lock.json
