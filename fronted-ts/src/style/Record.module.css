@@ -1,0 +1,33 @@
+/* Record.module.css */
+.video {
+    
+}
+
+.alert {
+}
+
+.stopRecordingButton {
+    font-size: 3rem;
+    background-color: red;
+}
+
+.startRecordingButton {
+    font-size: 3rem;
+    background-color: green;
+}
+
+.toggleRecordingModeButton {
+    font-size: 2rem;
+}
+
+.infoAlert {
+}
+
+.successAlert {
+}
+
+.warningAlert {
+}
+
+.recordingTime {
+}
