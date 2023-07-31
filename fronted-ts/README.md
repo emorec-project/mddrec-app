@@ -23,14 +23,9 @@ Before you begin, ensure you have met the following requirements:
 
 ### Installing 
 
-1. Clone the repository
-```
-git clone https://github.com/username/projectname.git
-```
-
 2. Move into the project directory
 ```
-cd projectname
+cd fronted-ts
 ```
 
 3. Install the dependencies
@@ -49,15 +44,3 @@ The application will start on [http://localhost:3000](http://localhost:3000) if 
 
 - [React](https://reactjs.org/) - A JavaScript library for building user interfaces
 - [Ant Design](https://ant.design/) - A design system with values of Nature and Determinacy for better user experience of enterprise applications
-
-## Contributing 
-
-We would love for you to contribute to the `projectname`, pull requests are welcome! 
-
-For major changes, please open an issue first to discuss what you would like to change. 
-
-Please make sure to update tests as appropriate.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE.md file for details.
