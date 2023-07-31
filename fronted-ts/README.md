@@ -1,4 +1,4 @@
-# Video and Audio Recording App
+# fronted-ts - An Video and Audio Recording App
 
 This is a React application for recording video and audio sessions. It leverages the MediaRecorder API to capture media, and allows users to toggle between video and audio recording modes. 
 
