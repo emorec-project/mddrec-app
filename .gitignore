@@ -30,3 +30,4 @@ fronted-ts/node_modules
 *.pyc
 *.sqlite3
 fronted-ts/package-lock.json
+*.lock

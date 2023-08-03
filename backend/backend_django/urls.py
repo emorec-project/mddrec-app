@@ -15,11 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from ..blobs_manager import views
-from django.urls import include, path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('upload/', views.upload, name='upload'),
-]
+    # Including the blobs_manager app urls
+    path('blobs_manager/', include('blobs_manager.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

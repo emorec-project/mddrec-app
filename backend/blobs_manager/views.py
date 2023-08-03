@@ -1,5 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import FileSystemStorage
+from django.views import View
 import os
 
 @csrf_exempt
@@ -17,3 +19,16 @@ def upload(request):
 
     else:
         return JsonResponse({'error': 'Invalid request method'})
+
+
+class UploadView(View):
+    def post(self, request):
+        if 'file' not in request.FILES:
+            return JsonResponse({'error': 'No file in request.'}, status=400)
+
+        file = request.FILES['file']
+        fs = FileSystemStorage()
+        filename = fs.save(file.name, file)
+        file_url = fs.url(filename)
+
+        return JsonResponse({'file_url': file_url})

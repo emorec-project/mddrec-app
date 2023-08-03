@@ -15,9 +15,6 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<string[]>([]);
 
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
-
   const handleDataAvailable = (e: BlobEvent) => {
     setRecordedChunks((prev) => prev.concat(e.data));
   }
@@ -77,32 +74,11 @@ const App: React.FC = () => {
       setTimer(0);
     }
     return () => clearInterval(interval);
-  }, [capturing]);
+  }, [capturing]);  
 
-  const handleUpload = (file: any): false => {
-    const fileType = file.type.split('/')[0];
-  
-    if (fileType === 'audio') {
-      setUploadedAudio(file);
-    } else if (fileType === 'video') {
-      setUploadedFile(file);
-    }
-  
-    return false;
-  }
-  
-
-  useEffect(() => {
-    if (uploadedFile) {
-      const url = URL.createObjectURL(uploadedFile);
-      setSessions(prev => [...prev, url]);
-    }
-
-    if (uploadedAudio) {
-      const url = URL.createObjectURL(uploadedAudio);
-      setSessions(prev => [...prev, url]);
-    }
-  }, [uploadedFile, uploadedAudio]);
+  const addSession = (url: string) => {
+    setSessions(prev => [...prev, url]);
+  };
 
   const toggleRecordingMode = () => {
     if (capturing) {
@@ -127,7 +103,9 @@ const App: React.FC = () => {
         toggleRecordingMode={toggleRecordingMode}
         mediaStream={mediaStream}
       />
-      <UploadFiles handleUpload={handleUpload} />
+      <UploadFiles 
+        addSession={addSession}
+      />
       <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} />
     </div>
   );
