@@ -15,10 +15,11 @@ export const UploadFiles: React.FC<UploadFilesProps> = ({ addSession }) => {
     let formData = new FormData();
     formData.append('file', file);
 
-    axios.post('http://localhost:8000/blobs_manager/upload', formData, {
+    axios.post('http://localhost:8000/blobs_manager/upload/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
+      },
+      withCredentials: true
     }).then(response => {
       console.log(response);
     }).catch(error => {
@@ -55,15 +56,8 @@ export const UploadFiles: React.FC<UploadFilesProps> = ({ addSession }) => {
   return (
     <div>
     <Upload beforeUpload={handleUpload} showUploadList={false}>
-      <Button icon={<UploadOutlined />}>Click to Upload</Button>
+      <Button icon={<UploadOutlined />}>Upload an MP4/ MP3 file</Button>
     </Upload>
-      {/* <Upload
-        accept="audio/mp3"
-        beforeUpload={handleUpload}
-        showUploadList={false}
-      >
-        <Button icon={<UploadOutlined />}>Upload an MP3 file</Button>
-      </Upload> */}
     </div>
   );
 };
