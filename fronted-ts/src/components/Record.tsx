@@ -24,10 +24,12 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
   }, [mediaStream]);
 
   const handleDataAvailable = (e: BlobEvent) => {
+    console.log("Data available event fired");
     setRecordedChunks((prev) => prev.concat(e.data));
   }
 
   const handleStopRecording = () => {
+    console.log("Stop recording invoked. recordedChunks.length", recordedChunks.length);
     if (mediaRecorderRef.current && recordedChunks.length) {
       const blob = new Blob(recordedChunks, { type: recordingAudio ? 'audio/webm' : 'video/webm' });
       const url = URL.createObjectURL(blob);
@@ -39,8 +41,13 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
+      setTimeout(() => {
+        handleStopRecording();
+      }, 150); // 1500ms delay to give dataavailable a chance to fire
+  
+      // mediaStream?.getTracks().forEach((track) => track.stop());
     }
-  }
+  }  
 
   const startMediaRecorder = async () => {
     try {
@@ -50,10 +57,7 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
       mediaRecorder.ondataavailable = handleDataAvailable;
       mediaRecorder.onstop = handleStopRecording;
       mediaRecorderRef.current = mediaRecorder;
-      
-      if (capturing) {
-        mediaRecorderRef.current.start(5000);
-      }
+      mediaRecorderRef.current.start(1000);
     } catch (err: any) {
       console.error("Error accessing media devices:", err.message);
     }
