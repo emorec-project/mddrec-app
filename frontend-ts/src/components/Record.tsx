@@ -28,7 +28,6 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
   }
 
   const handleStopRecording = () => {
-    console.log("Stop recording invoked. recordedChunks.length", recordedChunks.length);
     if (mediaRecorderRef.current && recordedChunks.length) {
       const blob = new Blob(recordedChunks, { type: recordingAudio ? 'audio/webm' : 'video/webm' });
       const url = URL.createObjectURL(blob);
