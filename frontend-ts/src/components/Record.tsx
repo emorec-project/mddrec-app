@@ -24,7 +24,6 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
   }, [mediaStream]);
 
   const handleDataAvailable = (e: BlobEvent) => {
-    console.log("Data available event fired");
     setRecordedChunks((prev) => prev.concat(e.data));
   }
 
@@ -43,9 +42,9 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
       mediaRecorderRef.current.stop();
       setTimeout(() => {
         handleStopRecording();
-      }, 150); // 1500ms delay to give dataavailable a chance to fire
+      }, 150); // 100ms delay to give dataavailable a chance to fire
   
-      // mediaStream?.getTracks().forEach((track) => track.stop());
+      mediaStream?.getTracks().forEach((track) => track.stop());
     }
   }  
 
