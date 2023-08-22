@@ -5,6 +5,11 @@ import { RecordedSessions } from './RecordedSessions';
 import { Record } from './Record';
 import { UploadFiles } from './Upload';
 
+import { BrowserRouter as Router, Routes,Route } from 'react-router-dom';
+import PageRouter from './PageRouter';
+import Results from './Results';
+import SessionScreen from './SessionScreen';
+
 const App: React.FC = () => {
   const [capturing, setCapturing] = useState(false);
   const [recordingAudio, setRecordingAudio] = useState(false);
@@ -19,20 +24,30 @@ const App: React.FC = () => {
   }
 
   return (
-    <div>
-      <Record 
-        capturing={capturing}
-        setCapturing={setCapturing}
-        recordingAudio={recordingAudio}
-        toggleRecordingMode={toggleRecordingMode}
-        addSession={addSession}
-      />
-      <UploadFiles 
-        addSession={addSession}
-      />
-      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} />
-    </div>
-  );
+    <Router>
+      <Routes>
+        <Route path='/' element={<PageRouter />} />
+        <Route path='results' element={<Results />}/>
+        <Route path='sessions_recorder' element={<SessionScreen />}/>
+      </Routes>
+    </Router>
+  )
+
+  // return (
+  //   <div>
+  //     <Record 
+  //       capturing={capturing}
+  //       setCapturing={setCapturing}
+  //       recordingAudio={recordingAudio}
+  //       toggleRecordingMode={toggleRecordingMode}
+  //       addSession={addSession}
+  //     />
+  //     <UploadFiles 
+  //       addSession={addSession}
+  //     />
+  //     <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} />
+  //   </div>
+  // );
 };
 
 export default App;
