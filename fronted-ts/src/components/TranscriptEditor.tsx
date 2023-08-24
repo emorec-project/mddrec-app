@@ -3,17 +3,17 @@ import { TranscriptEditor } from "@bbc/react-transcript-editor"
 import React, { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 import {
   loadLocalSavedData,
   isPresentInLocalStorage,
   localSave
-} from "./local-storage.js";
-//import style from "./index.module.scss";
-const style = require("./index.module.scss")
-
+} from "./local-storage.ts";
 import DEMO_TRANSCRIPT from "../temp_data/transcriptExampleData.json"
+//@ts-ignore
+import style from "./TranscriptEditor.css";
+// const style = require("./index.module.scss")
+
 const DEMO_TITLE ="TED Talk | Kate Darling - Why we have an emotional connection to robots"
 const DEMO_MEDIA_URL = "https://download.ted.com/talks/KateDarling_2018S-950k.mp4"
 
@@ -25,7 +25,6 @@ const TEditor = () => {
     isTextEditable: true,
     spellCheck: false,
     sttType: "bbckaldi",
-    analyticsEvents: [],
     title: "",
     fileName: "",
     autoSaveData: {},
@@ -83,24 +82,24 @@ const TEditor = () => {
     });
   };
 
-  const handleLoadTranscriptJson = files => {
-    const file = files[0];
+  // const handleLoadTranscriptJson = files => {
+  //   const file = files[0];
 
-    if (file.type === "application/json") {
-      const fileReader = new FileReader();
+  //   if (file.type === "application/json") {
+  //     const fileReader = new FileReader();
 
-      fileReader.onload = event => {
-        //@ts-ignore
-        setData({
-          transcriptData: JSON.parse(event.target.result)
-        });
-      };
+  //     fileReader.onload = event => {
+  //       //@ts-ignore
+  //       setData({
+  //         transcriptData: JSON.parse(event.target.result)
+  //       });
+  //     };
 
-      fileReader.readAsText(file);
-    } else {
-      alert("Select a valid JSON file.");
-    }
-  };
+  //     fileReader.readAsText(file);
+  //   } else {
+  //     alert("Select a valid JSON file.");
+  //   }
+  // };
 
   const handleIsTextEditable = e => {
     //@ts-ignore
@@ -129,21 +128,21 @@ const TEditor = () => {
     setData({ [event.target.name]: event.target.value });
   };
 
-  const exportTranscript = () => {
-    console.log("export");
-    // eslint-disable-next-line react/no-string-refs
-    const { data, ext } = this.transcriptEditorRef.current.getEditorContent(
-      data.exportFormat
-    );
-    let tmpData = data;
-    if (ext === "json") {
-      tmpData = JSON.stringify(data, null, 2);
-    }
-    if (ext !== "docx") {
-      //@ts-ignore
-      download(tmpData, `${data.mediaUrl}.${ext}`);
-    }
-  };
+  // const exportTranscript = () => {
+  //   console.log("export");
+  //   // eslint-disable-next-line react/no-string-refs
+  //   const { data, ext } = this.transcriptEditorRef.current.getEditorContent(
+  //     data.exportFormat
+  //   );
+  //   let tmpData = data;
+  //   if (ext === "json") {
+  //     tmpData = JSON.stringify(data, null, 2);
+  //   }
+  //   if (ext !== "docx") {
+  //     //@ts-ignore
+  //     download(tmpData, `${data.mediaUrl}.${ext}`);
+  //   }
+  // };
 
   // https://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
   const download = (content, filename, contentType) => {
@@ -166,10 +165,7 @@ const TEditor = () => {
     console.info("Cleared local storage.");
   };
 
-  const handleAnalyticsEvents = event => {
-    //@ts-ignore
-    setData({ analyticsEvents: [...data.analyticsEvents, event] });
-  };
+ 
 
   const handleChangeTranscriptTitle = newTitle => {
     //@ts-ignore
@@ -194,14 +190,7 @@ const TEditor = () => {
 
   return (
     <div className={style.container}>
-      <span>React Transcript Editor Demo </span>
-      <a
-        href="https://github.com/bbc/react-transcript-editor"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <FontAwesomeIcon icon={faGithub} />
-      </a>
+      
       <div className={style.demoNav}>
         <section className={style.demoNavItem}>
           <label className={style.sectionLabel}>Start</label>
@@ -236,7 +225,7 @@ const TEditor = () => {
           <input
             type={"file"}
             id={"transcriptFile"}
-            onChange={e => handleLoadTranscriptJson(e.target.files)}
+            // onChange={e => handleLoadTranscriptJson(e.target.files)}
           />
           <label htmlFor="transcriptFile">From Computer</label>
           {data.transcriptData !== null ? (
@@ -247,7 +236,7 @@ const TEditor = () => {
         <section className={style.demoNavItem}>
           <label className={style.sectionLabel}>Export Transcript</label>
           
-          <button onClick={() => exportTranscript()}>Export File</button>
+          {/* <button onClick={() => exportTranscript()}>Export File</button> */}
         </section>
 
         <section className={style.demoNavItem}>
@@ -276,7 +265,7 @@ const TEditor = () => {
               id={"textIsEditableCheckbox"}
               type="checkbox"
               checked={data.isTextEditable}
-              onChange={this.handleIsTextEditable}
+              onChange={handleIsTextEditable}
             />
           </div>
 
@@ -291,7 +280,7 @@ const TEditor = () => {
               id={"spellCheckCheckbox"}
               type="checkbox"
               checked={data.spellCheck}
-              onChange={this.handleSpellCheck}
+              onChange={handleSpellCheck}
             />
           </div>
 
@@ -311,22 +300,14 @@ const TEditor = () => {
         isEditable={data.isTextEditable}
         spellCheck={data.spellCheck}
         sttJsonType={data.sttType}
-        handleAnalyticsEvents={this.handleAnalyticsEvents}
         title={data.title}
-        ref={this.transcriptEditorRef}
-        handleAutoSaveChanges={this.handleAutoSaveChanges}
+        // ref={this.transcriptEditorRef}
+        handleAutoSaveChanges={handleAutoSaveChanges}
         autoSaveContentType={data.autoSaveContentType}
         mediaType={ 'video' }
       />
 
-      <section style={{ height: "250px", width: "50%", float: "left" }}>
-        <h3>Components Analytics</h3>
-        <textarea
-          style={{ height: "100%", width: "100%" }}
-          value={JSON.stringify(data.analyticsEvents, null, 2)}
-          disabled
-        />
-      </section>
+
 
       <section style={{ height: "250px", width: "50%", float: "right" }}>
         <h3>
