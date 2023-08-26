@@ -53,7 +53,7 @@ async def upload(file: UploadFile = Form(...),
         stt_file = get_stt_from_path(path=final_file_path, is_escaped=False)
         # Create the stt_files directory if it doesn't exist
         STT_DIR.mkdir(parents=True, exist_ok=True)
-        stt_file_path = STT_DIR / filename
+        stt_file_path = STT_DIR / final_file_name
         save_file(stt_file, stt_file_path)
 
         return JSONResponse(content={"file_url": str(final_file_path), "message": "File uploaded successfully."})
