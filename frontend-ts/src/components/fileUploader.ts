@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 export const uploadFile = (file: File, sessionId: string, callback: (url: string) => void) => {
-    const CHUNK_SIZE = 1024 * 1024; // 1MB
+    const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
     const fileSize = file.size;
     const chunksCount = Math.ceil(fileSize / CHUNK_SIZE);
     

@@ -19,12 +19,6 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [timer, setTimer] = useState(0);
   const [sessionId, setSessionId] = useState<string>("");
-
-  useEffect(() => {
-      if(capturing) {
-          setSessionId(uuidv4()); // Set a new unique ID every time a recording starts
-      }
-  }, [capturing]);
   
   useEffect(() => {
     if (videoRef.current && mediaStream) {
@@ -87,6 +81,7 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
 
   useEffect(() => {
     if(capturing) {
+      setSessionId(uuidv4()); // Set a new unique ID every time a recording starts
       startMediaRecorder();
     } else if(mediaRecorderRef.current) {
       stopRecording();
