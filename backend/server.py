@@ -51,11 +51,12 @@ async def upload(file: UploadFile = Form(...),
         # Create the stt_files directory if it doesn't exist
         STT_DIR.mkdir(parents=True, exist_ok=True)
         stt_file_path = STT_DIR / filename
-        with open(f'{stt_file_path}.txt', 'w') as file:
-            file.write(stt_file)
-            print('Finished saving stt file')
+        save_file(stt_file, stt_file_path)
 
         return JSONResponse(content={"file_url": str(final_file_path)})
 
     return JSONResponse(content={"message": "Chunk received."})
 
+def save_file(file_to_save, path):
+    with open(f'{path}.txt', 'w') as file:
+        file.write(file_to_save)
