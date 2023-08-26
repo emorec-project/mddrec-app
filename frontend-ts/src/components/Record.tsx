@@ -107,8 +107,10 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
   
   return (
     <div>
-      {mediaStream && !recordingAudio && <video className={"video"} ref={videoRef} autoPlay muted></video>}
-      {capturing && recordingAudio && <Alert className={"alert"} message="Recording..." type="info" />}
+      <div className="mediaSection"> 
+        {mediaStream && !recordingAudio && <video className={"video"} ref={videoRef} autoPlay muted></video>}
+        {capturing && recordingAudio && <Alert className={"alert"} message="Recording..." type="info" />}
+      </div>
       <Button 
         type="primary"
         className={capturing ? "stopRecordingButton" : "startRecordingButton"}

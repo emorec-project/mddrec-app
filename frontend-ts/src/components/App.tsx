@@ -25,7 +25,7 @@ const App: React.FC = () => {
 }, []);
 
   return (
-    <div>
+    <div className="container">
       <Record 
         capturing={capturing}
         setCapturing={setCapturing}
