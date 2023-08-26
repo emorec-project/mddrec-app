@@ -14,8 +14,8 @@ export const RecordedSessions: React.FC<RecordedSessionsProps> = ({ sessions, re
           {sessions.map((session, index) => (
             <div key={index}>
               {recordingAudio ? 
-                <audio src={session} controls></audio> : 
-                <video src={session} controls></video>
+                <audio preload="none" src={session} controls></audio> : 
+                <video preload="none" src={session} controls></video>
               }
             </div>
           ))}
