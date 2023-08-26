@@ -1,2 +1,4 @@
 fastapi[all]
 uvicorn
+git+https://github.com/openai/whisper.git
+ffmpeg
