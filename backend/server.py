@@ -1,3 +1,4 @@
+from stt_model import get_stt_from_path
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from pathlib import Path
@@ -9,6 +10,7 @@ app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent
 CHUNKS_DIR = BASE_DIR / 'tmp' / 'chunks'
 UPLOADS_DIR = BASE_DIR / 'uploads'
+STT_DIR = BASE_DIR / 'stt_files'
 
 
 @app.post("/blobs_manager/upload/")
@@ -43,7 +45,17 @@ async def upload(file: UploadFile = Form(...),
 
         # Delete the temporary chunks directory
         shutil.rmtree(CHUNKS_DIR.parent)
+        
+        # STT Process
+        stt_file = get_stt_from_path(path=final_file_path, is_escaped=False)
+        # Create the stt_files directory if it doesn't exist
+        STT_DIR.mkdir(parents=True, exist_ok=True)
+        stt_file_path = STT_DIR / filename
+        with open(f'{stt_file_path}.txt', 'w') as file:
+            file.write(stt_file)
+            print('Finished saving stt file')
 
         return JSONResponse(content={"file_url": str(final_file_path)})
 
     return JSONResponse(content={"message": "Chunk received."})
+
