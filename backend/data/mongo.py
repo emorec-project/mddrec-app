@@ -1,12 +1,15 @@
 import pymongo
 from dtos import Document
 
+MONGO_ID = "_id"
+DOCUMENT_ID = "id"
+
 myclient = pymongo.MongoClient("mongodb+srv://mdd-access:mdd-read-write@learn0.fu403zg.mongodb.net/")
 mydb = myclient["learn0"]
 mycol = mydb["sample"]
 
 def find_doc_by_id(_id: str):
-    result = mycol.find_one({"_id": _id})
+    result = mycol.find_one({MONGO_ID: _id})
     return result
 
 def insert_doc(doc: Document):
@@ -24,5 +27,5 @@ def insert_docs(docs : list[Document]):
 
 def create_mongo_doc(doc: Document):
     mongoDoc = dict(doc)
-    mongoDoc["_id"] = mongoDoc["id"]
+    mongoDoc[MONGO_ID] = mongoDoc[DOCUMENT_ID]
     return mongoDoc
