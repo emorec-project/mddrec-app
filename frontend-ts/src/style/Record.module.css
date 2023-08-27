@@ -1,11 +1,3 @@
-/* Record.module.css */
-.video {
-    
-}
-
-.alert {
-}
-
 .stopRecordingButton {
     font-size: 3rem;
     background-color: red;
@@ -19,19 +11,6 @@
 .toggleRecordingModeButton {
     font-size: 2rem;
 }
-
-.infoAlert {
-}
-
-.successAlert {
-}
-
-.warningAlert {
-}
-
-.recordingTime {
-}
-
 
 body {
     background-color: #FFE4B5; /* Light orange background color */
