@@ -11,7 +11,6 @@ app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent
 CHUNKS_DIR = BASE_DIR / 'tmp' / 'chunks'
 UPLOADS_DIR = BASE_DIR / 'uploads'
-UNHANDELED_EXCEPTION_MSG = "unhandaled exception accurred"
 
 @app.post("/insert_doc/")
 async def create_item(doc: Document):
