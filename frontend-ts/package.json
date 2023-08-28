@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
+    "@mui/material": "^5.14.2",
     "@mui/styles": "^5.14.1",
     "antd": "^5.7.3",
     "axios": "1.4.0",
