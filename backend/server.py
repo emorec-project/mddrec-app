@@ -1,8 +1,10 @@
 from stt_model import get_stt_from_path
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
+from dtos import Document
 from pathlib import Path
 import shutil
+import data.mongo as repo
 import os
 import pathlib
 
@@ -12,6 +14,18 @@ BASE_DIR = Path(__file__).resolve().parent
 CHUNKS_DIR = BASE_DIR / 'tmp' / 'chunks'
 UPLOADS_DIR = BASE_DIR / 'uploads'
 STT_DIR = BASE_DIR / 'stt_files'
+
+@app.post("/insert_doc/")
+async def create_item(doc: Document):
+    return repo.insert_doc(doc)
+
+@app.post("/insert_docs/")
+async def create_items(docs: list[Document]):
+    return repo.insert_docs(docs)
+
+@app.get("/find_doc_by_id/{doc_id}")
+async def find_doc_by_id(doc_id: str):
+    return repo.find_doc_by_id(doc_id)
 
 
 @app.post("/blobs_manager/upload/")
