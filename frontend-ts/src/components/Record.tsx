@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Button } from 'antd';
 import '../style/Record.module.css';
+import { uploadFile } from './fileUploader';
+import { v4 as uuidv4 } from 'uuid';
 
 interface RecordProps {
   capturing: boolean;
@@ -16,7 +18,8 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [timer, setTimer] = useState(0);
-
+  const [sessionId, setSessionId] = useState<string>("");
+  
   useEffect(() => {
     if (videoRef.current && mediaStream) {
       videoRef.current.srcObject = mediaStream;
@@ -27,14 +30,29 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
     setRecordedChunks((prev) => prev.concat(e.data));
   }
 
+  const blobToFile = (b: Blob, fileName: string): File => {
+    return new File([b], fileName, {
+        type: b.type,
+        lastModified: Date.now()
+    });
+};
+
   const handleStopRecording = () => {
     if (mediaRecorderRef.current && recordedChunks.length) {
-      const blob = new Blob(recordedChunks, { type: recordingAudio ? 'audio/webm' : 'video/webm' });
-      const url = URL.createObjectURL(blob);
-      addSession(url);
-      setRecordedChunks([]);
+        const blob = new Blob(recordedChunks, { type: recordingAudio ? 'audio/mp3' : 'video/mp4' });
+        const file = blobToFile(blob, recordingAudio ? "audio.mp3" : "video.mp4");
+        const url = URL.createObjectURL(blob);
+        addSession(url);
+
+        // Upload recorded chunks to the backend
+        uploadFile(file, sessionId, (uploadedUrl) => {
+            console.log("Uploaded recorded chunks:", uploadedUrl);
+        });
+
+        setRecordedChunks([]);
     }
-  }
+}
+
 
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
@@ -63,6 +81,7 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
 
   useEffect(() => {
     if(capturing) {
+      setSessionId(uuidv4()); // Set a new unique ID every time a recording starts
       startMediaRecorder();
     } else if(mediaRecorderRef.current) {
       stopRecording();
@@ -85,7 +104,7 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
     }
     return () => clearInterval(interval);
   }, [capturing]);
-
+  
   return (
     <div>
       {mediaStream && !recordingAudio && <video className={"video"} ref={videoRef} autoPlay muted></video>}
