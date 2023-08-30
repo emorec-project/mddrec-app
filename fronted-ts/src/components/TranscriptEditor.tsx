@@ -18,39 +18,39 @@ const DEMO_TITLE ="TED Talk | Kate Darling - Why we have an emotional connection
 const DEMO_MEDIA_URL = "https://download.ted.com/talks/KateDarling_2018S-950k.mp4"
 
 const TEditor = () => {
-  console.log(DEMO_TRANSCRIPT)
   const [data,setData] = useState({
     transcriptData: null,
     mediaUrl: null,
     isTextEditable: true,
     spellCheck: false,
     sttType: "bbckaldi",
+    // analyticsEvents: [],
     title: "",
     fileName: "",
     autoSaveData: {},
     autoSaveContentType: "draftjs",
     autoSaveExtension: "json"
   })
-  
+  const transcriptEditorRef = React.createRef()
   const loadDemo = () => {
     if(isPresentInLocalStorage(DEMO_MEDIA_URL)){
       const transcriptDataFromLocalStorage = loadLocalSavedData(DEMO_MEDIA_URL)
+      const newData = {...data}
+      newData.transcriptData = transcriptDataFromLocalStorage
+      newData.mediaUrl = DEMO_MEDIA_URL
+      newData.title = DEMO_TITLE
+      newData.sttType = 'draftjs'
       //@ts-ignore
-      setData({
-        transcriptData: transcriptDataFromLocalStorage,
-        mediaUrl: DEMO_MEDIA_URL,
-        title: DEMO_TITLE,
-        sttType: 'draftjs'
-      });
+      setData(newData);
     }
     else{
+      const newData = {...data}
+      newData.transcriptData = DEMO_TRANSCRIPT
+      newData.mediaUrl = DEMO_MEDIA_URL
+      newData.title = DEMO_TITLE
+      newData.sttType = 'bbckaldi'
       //@ts-ignore
-      setData({
-      transcriptData: DEMO_TRANSCRIPT,
-        mediaUrl: DEMO_MEDIA_URL,
-        title: DEMO_TITLE,
-        sttType: "bbckaldi"
-      });
+      setData(newData);
     }
    
   };
@@ -62,12 +62,11 @@ const TEditor = () => {
 
     if (canPlay) {
       const fileURL = URL.createObjectURL(file);
+      const newData = {...data}
+      newData.mediaUrl = fileURL
+      newData.fileName = file.name
       //@ts-ignore
-      setData({
-        // transcriptData: DEMO_TRANSCRIPT,
-        mediaUrl: fileURL,
-        fileName: file.name
-      });
+      setData(newData);
     } else {
       alert("Select a valid audio or video file.");
     }
@@ -75,72 +74,64 @@ const TEditor = () => {
 
   const handleLoadMediaUrl = () => {
     const fileURL = prompt("Paste the URL you'd like to use here:");
+    const newData = {...data}
+    newData.mediaUrl = fileURL
     //@ts-ignore
-    setData({
-      // transcriptData: DEMO_TRANSCRIPT,
-      mediaUrl: fileURL
-    });
+    setData(newData);
   };
 
-  // const handleLoadTranscriptJson = files => {
-  //   const file = files[0];
+  const handleLoadTranscriptJson = files => {
+    const file = files[0];
 
-  //   if (file.type === "application/json") {
-  //     const fileReader = new FileReader();
+    if (file.type === "application/json") {
+      const fileReader = new FileReader();
+      
+      fileReader.onload = event => {
+        //@ts-ignore
+        console.log(JSON.parse(event.target.result))
+        const newData = {...data}
+        //@ts-ignore
+        newData.transcriptData = JSON.parse(event.target.result)
+        //@ts-ignore
+        setData(newData);
+      };
 
-  //     fileReader.onload = event => {
-  //       //@ts-ignore
-  //       setData({
-  //         transcriptData: JSON.parse(event.target.result)
-  //       });
-  //     };
-
-  //     fileReader.readAsText(file);
-  //   } else {
-  //     alert("Select a valid JSON file.");
-  //   }
-  // };
+      fileReader.readAsText(file);
+    } else {
+      alert("Select a valid JSON file.");
+    }
+  };
 
   const handleIsTextEditable = e => {
-    //@ts-ignore
-    setData({
-      isTextEditable: e.target.checked
-    });
+    const newData = {...data}
+    newData.isTextEditable = e.target.checked
+    setData(newData);
   };
 
 
   const handleSpellCheck = e => {
-    //@ts-ignore
-    setData({
-      spellCheck: e.target.checked
-    });
+    const newData = {...data}
+    newData.spellCheck = e.target.checked
+    setData(newData);
   };
 
   
-  const handleSttTypeChange = event => {
-    //@ts-ignore
-    setData({ [event.target.name]: event.target.value });
-  };
 
-  const handleExportFormatChange = event => {
-    console.log(event.target.name, event.target.value);
-    //@ts-ignore
-    setData({ [event.target.name]: event.target.value });
-  };
 
   // const exportTranscript = () => {
   //   console.log("export");
   //   // eslint-disable-next-line react/no-string-refs
-  //   const { data, ext } = this.transcriptEditorRef.current.getEditorContent(
+  //   //@ts-ignore
+  //   const { data_, ext } = transcriptEditorRef.current.getEditorContent(
   //     data.exportFormat
   //   );
-  //   let tmpData = data;
+  //   let tmpData = data_;
   //   if (ext === "json") {
-  //     tmpData = JSON.stringify(data, null, 2);
+  //     tmpData = JSON.stringify(data_, null, 2);
   //   }
   //   if (ext !== "docx") {
   //     //@ts-ignore
-  //     download(tmpData, `${data.mediaUrl}.${ext}`);
+  //     download(tmpData, `${data_.mediaUrl}.${ext}`);
   //   }
   // };
 
@@ -165,27 +156,35 @@ const TEditor = () => {
     console.info("Cleared local storage.");
   };
 
- 
+  // const handleAnalyticsEvents = event => {
+  //   //@ts-ignore
+  //   setData({ analyticsEvents: [...data.analyticsEvents, event] });
+  // };
 
   const handleChangeTranscriptTitle = newTitle => {
+    const newData = {...data}
+    newData.title = newTitle
     //@ts-ignore
-    setData({
-      title: newTitle
-    });
+    setData(newData);
   };
 
   const handleChangeTranscriptName = value => {
+    const newData = {...data}
+    newData.fileName = value
     //@ts-ignore
-    setData({ fileName: value });
+    setData(newData);
   };
 
   const handleAutoSaveChanges = newAutoSaveData => {
-    console.log("handleAutoSaveChanges", newAutoSaveData);
-    const { data, ext } = newAutoSaveData;
+    // console.log("handleAutoSaveChanges", newAutoSaveData);
+    const { data_, ext } = newAutoSaveData;
+    const newData = {...data}
+    newData.autoSaveData = data_
+    newData.autoSaveExtension = ext
     //@ts-ignore
-    setData({ autoSaveData: data, autoSaveExtension: ext });
+    setData(newData);
     // Saving to local storage 
-    localSave(data.mediaUrl, data.fileName, data);
+    localSave(data_.mediaUrl, data_.fileName, data_);
   };
 
   return (
@@ -225,7 +224,7 @@ const TEditor = () => {
           <input
             type={"file"}
             id={"transcriptFile"}
-            // onChange={e => handleLoadTranscriptJson(e.target.files)}
+            onChange={e => handleLoadTranscriptJson(e.target.files)}
           />
           <label htmlFor="transcriptFile">From Computer</label>
           {data.transcriptData !== null ? (
@@ -234,7 +233,7 @@ const TEditor = () => {
         </section>
 
         <section className={style.demoNavItem}>
-          <label className={style.sectionLabel}>Export Transcript</label>
+          {/* <label className={style.sectionLabel}>Export Transcript</label> */}
           
           {/* <button onClick={() => exportTranscript()}>Export File</button> */}
         </section>
@@ -300,8 +299,9 @@ const TEditor = () => {
         isEditable={data.isTextEditable}
         spellCheck={data.spellCheck}
         sttJsonType={data.sttType}
+        // handleAnalyticsEvents={handleAnalyticsEvents}
         title={data.title}
-        // ref={this.transcriptEditorRef}
+        ref={transcriptEditorRef}
         handleAutoSaveChanges={handleAutoSaveChanges}
         autoSaveContentType={data.autoSaveContentType}
         mediaType={ 'video' }
