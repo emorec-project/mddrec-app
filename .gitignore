@@ -30,3 +30,15 @@ fronted-ts/node_modules
 *.pyc
 *.sqlite3
 fronted-ts/package-lock.json
+*.lock
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+backend/uploads
+backend/stt_files
