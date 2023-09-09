@@ -3,6 +3,11 @@ frontend-ts\node_modules
 /frontend-ts/node_modules/
 frontend-ts/node_modules
 
+frontend-react-native\node-modules
+frontend-react-native\node_modules
+/frontend-react-native/node_modules/
+frontend-react-native/node_modules
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -31,6 +36,7 @@ fronted-ts/node_modules
 *.sqlite3
 fronted-ts/package-lock.json
 *.lock
+*.expo
 
 # Environments
 .env
