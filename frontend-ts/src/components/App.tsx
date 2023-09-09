@@ -1,44 +1,41 @@
-import axios from 'axios';
 import React, { useState } from 'react';
+import axios from 'axios';
 import './App.css';
 import { RecordingPage } from './RecordingPage';
 import { LoginPage } from './login/LoginPage';
-import {User} from "./login/User";
+import { User } from "./login/User";
 import config from '../config/configLoader';
+import { UserProvider, useAuth } from './login/authContext';  // update the path accordingly
 
 const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const { state, dispatch } = useAuth();
   const [language, setLanguage] = useState<'en' | 'he'>('en'); // default to 'en'
 
   const handleLanguageChange = (newLang: 'en' | 'he') => {
-    console.log(language)
     setLanguage(newLang);
   };
 
   const handleUserLogin = async (userType: 'therapist' | 'patient', details: any) => {
     try {
-      // For this example, I'm assuming you send the login details to your backend API, 
-      // and in return, you get a user DTO if the authentication is successful.
       const response = await axios.post(`${config.apiBaseUrl}/login`, {
         email: details.email,
-        password: details.password, // Remember, this should be hashed!
+        password: details.password,
         userType: userType,
       });
 
       if (response.status === 200) {
         const userData = response.data;
-        setUser({
-          name: userData.name,
-          language: userData.language,
-          userType: userData.userType,
-          therapistName: userType === 'patient' ? userData.therapistName : undefined,
-          patients: userType === 'therapist' ? userData.patients : undefined
+        dispatch({
+          type: 'LOGIN',
+          payload: {
+            name: userData.name,
+            language: userData.language,
+            userType: userData.userType,
+            therapistName: userType === 'patient' ? userData.therapistName : undefined,
+            patients: userType === 'therapist' ? userData.patients : undefined
+          }
         });
-
-        setIsLoggedIn(true);
       } else {
-        // Handle any error messages or statuses returned by your backend
         console.error("Login failed:", response.data);
       }
     } catch (error) {
@@ -47,9 +44,11 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="app">
-      {isLoggedIn ? <RecordingPage user={user!} /> : <LoginPage onUserRegister={handleUserLogin} language={language} onLanguageChange={handleLanguageChange}/>}
-    </div>
+    <UserProvider>
+      <div className="app">
+        {state.isAuthenticated ? <RecordingPage user={state.user!} /> : <LoginPage onUserRegister={handleUserLogin} language={language} onLanguageChange={handleLanguageChange} />}
+      </div>
+    </UserProvider>
   );
 };
 

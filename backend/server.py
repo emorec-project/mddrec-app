@@ -1,4 +1,4 @@
-from stt_model import get_stt_from_path
+# from stt_model import get_stt_from_path
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from dtos import Document
@@ -9,16 +9,7 @@ import os
 import pathlib
 import os
 from login import register_user, login, oauth2_scheme
-
-# Default configuration
-from config.config import *
-
-profile = os.environ.get('PROFILE')
-
-if profile == 'prod':
-    from config.config_prod import *
-elif profile == 'test':
-    from config.config_test import *
+from config_loader import *
 
 app = FastAPI()
 

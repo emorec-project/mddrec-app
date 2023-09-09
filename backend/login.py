@@ -28,3 +28,30 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
     # If password is correct, return a token or any other logic you need
+
+
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"
+
+@app.post("/google_login/")
+async def google_login(token: str):
+    try:
+        # Validate the token
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+
+        # Check that the user's email is verified
+        if idinfo['email_verified']:
+            email = idinfo['email']
+
+            # Here, use the email to check if the user exists in your database
+            # If they don't, you might want to create a new user entry
+
+            return {"status": "success", "email": email}
+        else:
+            raise HTTPException(status_code=400, detail="Email not verified by Google")
+
+    except ValueError:
+        # Invalid token
+        raise HTTPException(status_code=400, detail="Invalid Google token")

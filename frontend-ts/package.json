@@ -27,7 +27,8 @@
     "typescript-plugin-css-modules": "^5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "REACT_APP_PROFILE=test react-scripts start",
+    "start:prod": "REACT_APP_PROFILE=prod react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

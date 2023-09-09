@@ -5,6 +5,8 @@ import { Input, Button, Checkbox, Radio, Dropdown, Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import styles from '../../style/LoginPage.module.css';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import axios from 'axios';
+import { message } from 'antd';
 
 interface Props {
     onUserRegister?: (userType: 'therapist' | 'patient', details: any) => void;
@@ -25,29 +27,56 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             <Menu.Item key="Therapist 2">Therapist 2</Menu.Item>
         </Menu>
     );
-    
-    const handleRegister = () => {
+
+    const handleRegister = async () => {
         if (onUserRegister && userType) {
             // Hash the password
             const hashedPassword = CryptoJS.SHA256(password).toString();
-            onUserRegister(userType, { email, password: hashedPassword, selectedTherapist });
+            try {
+                const response = await axios.post('/register/', {
+                    user_type: userType,
+                    details: { email, password: hashedPassword, selectedTherapist }
+                });
+                console.log(response.data);
+            } catch (error) {
+                message.error("Error during registration");
+            }
         } else {
-            // Handle the error - maybe show a message to the user
-            console.error("User type is not selected");
+            message.error("User type is not selected");
         }
     }    
-    const handleGoogleSuccess = (response: any) => {
-        // Here, you'll get the user details from Google and can send them to your backend to create or authenticate a user.
+    
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post('/token/', {
+                username: email,
+                password
+            });
+            console.log(response.data);
+            // Here you can save the token to local storage or state and navigate the user to another page
+        } catch (error) {
+            message.error("Error during login");
+        }
+    }
+     
+    const handleGoogleSuccess = async (response: any) => {
+        // We'll get the user details from Google and can send them to your backend to create or authenticate a user.
         const userDetails = {
             email: response.profileObj.email,
-            googleId: response.profileObj.googleId,
-            // other required data...
+            googleId: response.profileObj.googleId
         };
-        // Send userDetails to the backend or do any other logic
+        try {
+            const res = await axios.post('/register_with_google/', userDetails);
+            console.log(res.data);
+            // Here you can save the token to local storage or state and navigate the user to another page
+        } catch (error) {
+            message.error("Error during registration with Google");
+        }
     };
+    
 
     const handleGoogleFailure = () => {
-        console.error('Google Sign In was unsuccessful. Try again later.');
+        message.error('Google Sign In was unsuccessful. Try again later.');
     };
 
     const toggleLanguage = () => {
@@ -55,7 +84,6 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             onLanguageChange(language === 'en' ? 'he' : 'en');
         }
     }
-
 
 
     const translations = {
@@ -68,8 +96,7 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             isPatient: "Are you a patient?",
             changeLanguage: "Change language",
             rememberMe: 'Remember Me',
-            forgotPassword: 'Forgot Password?',
-            googleSignUp: 'Sign up with Google'
+            forgotPassword: 'Forgot Password?'
         },
         he: {
             signUp: 'הרשמה',
@@ -80,8 +107,7 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             isPatient: "האם הינך מטופל?",
             changeLanguage: "החלף שפה",
             rememberMe: 'זכור אותי',
-            forgotPassword: 'שכחת סיסמה?',
-            googleSignUp: 'הרשם דרך גוגל'
+            forgotPassword: 'שכחת סיסמה?'
         }
     }
 
@@ -117,14 +143,11 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             </GoogleOAuthProvider>
     
             <div className={styles["inline-elements"]}>
-                <button>{translations[language].login}</button>
+                <button onClick={handleLogin}>{translations[language].login}</button>
                 <Checkbox>{translations[language].rememberMe}</Checkbox>
             </div>
     
-            <button>{translations[language].forgotPassword}</button>
-            <button>{translations[language].googleSignUp}</button>
-    
+            <button>{translations[language].forgotPassword}</button>    
         </div>
     )
-    
 }
