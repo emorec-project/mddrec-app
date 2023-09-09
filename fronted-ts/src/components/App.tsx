@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import './App.css';
-import { Alert } from 'antd';
 import { RecordedSessions } from './RecordedSessions';
 import { Record } from './Record';
 import { UploadFiles } from './Upload';
-
-import { BrowserRouter as Router, Routes,Route } from 'react-router-dom';
-import PageRouter from './PageRouter';
+import Grid from '@material-ui/core/Grid';
+import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
 import Results from './Results';
 import SessionScreen from './SessionScreen';
+import CardsGrid from './CardsGrid';
 
 const App: React.FC = () => {
   const [capturing, setCapturing] = useState(false);
@@ -24,13 +23,23 @@ const App: React.FC = () => {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path='/' element={<PageRouter />} />
-        <Route path='results' element={<Results />}/>
-        <Route path='sessions_recorder' element={<SessionScreen />}/>
-      </Routes>
-    </Router>
+    <div>
+      <Grid container>
+
+        <Grid item xs={12}>
+          <BrowserRouter>
+          <Routes>
+          <Route path='/' element={<CardsGrid />} />
+          <Route path='resultsPage' element={<Results/>}/>
+          <Route path='newInterview' element={<SessionScreen />}/>
+          <Route path='cards_grid' element={<CardsGrid />}/>
+        </Routes>
+        </BrowserRouter>
+        </Grid>
+
+      </Grid>
+    </div>
+   
   )
 
   // return (

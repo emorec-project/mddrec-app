@@ -2,7 +2,7 @@ const Results =() =>{
     return (
     <ul>
         <h1>
-            aaaaaa
+            Interesting Results!
         </h1>
     </ul>
     )
