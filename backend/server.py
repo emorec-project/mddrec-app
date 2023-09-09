@@ -7,6 +7,18 @@ import shutil
 import data.mongo as repo
 import os
 import pathlib
+import os
+from login import register_user, login, oauth2_scheme
+
+# Default configuration
+from config.config import *
+
+profile = os.environ.get('PROFILE')
+
+if profile == 'prod':
+    from config.config_prod import *
+elif profile == 'test':
+    from config.config_test import *
 
 app = FastAPI()
 
@@ -77,3 +89,11 @@ async def upload(file: UploadFile = Form(...),
 def save_file(file_to_save, path):
     with open(f'{path}.txt', 'w') as file:
         file.write(file_to_save)
+        
+@app.post("/register/")
+async def register_endpoint(user_type: str, details: dict):
+    return await register_user(user_type, details)
+
+@app.post("/token/")
+async def login_endpoint(form_data: OAuth2PasswordRequestForm = Depends()):
+    return await login(form_data)

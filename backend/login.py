@@ -1,17 +1,13 @@
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import HTTPException, Depends
 import bcrypt
-
-app = FastAPI()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-@app.post("/register/")
 async def register_user(user_type: str, details: dict):
     hashed_password = bcrypt.hashpw(details['password'].encode('utf-8'), bcrypt.gensalt())
-    # Save hashed_password in your database along with other details
-    # ...
-@app.post("/register/")
-async def register_user(user_type: str, details: dict):
+    # Here, add the logic to save the hashed_password and other details to the database
+
     if user_type == "therapist":
         # Add the therapist to your database
         pass
@@ -23,7 +19,6 @@ async def register_user(user_type: str, details: dict):
 
     return {"status": "success"}
 
-@app.post("/token/")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = get_user_from_database(form_data.username)  # Your custom function to retrieve a user from your database
     if not user:
@@ -33,4 +28,3 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
     # If password is correct, return a token or any other logic you need
-

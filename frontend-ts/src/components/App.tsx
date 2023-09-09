@@ -4,16 +4,23 @@ import './App.css';
 import { RecordingPage } from './RecordingPage';
 import { LoginPage } from './login/LoginPage';
 import {User} from "./login/User";
+import config from '../config/configLoader';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [language, setLanguage] = useState<'en' | 'he'>('en'); // default to 'en'
+
+  const handleLanguageChange = (newLang: 'en' | 'he') => {
+    console.log(language)
+    setLanguage(newLang);
+  };
 
   const handleUserLogin = async (userType: 'therapist' | 'patient', details: any) => {
     try {
       // For this example, I'm assuming you send the login details to your backend API, 
       // and in return, you get a user DTO if the authentication is successful.
-      const response = await axios.post("http://your-backend-url/login", {
+      const response = await axios.post(`${config.apiBaseUrl}/login`, {
         email: details.email,
         password: details.password, // Remember, this should be hashed!
         userType: userType,
@@ -41,7 +48,7 @@ const App: React.FC = () => {
 
   return (
     <div className="app">
-      {isLoggedIn ? <RecordingPage user={user!} /> : <LoginPage onUserRegister={handleUserLogin} language="en" />}
+      {isLoggedIn ? <RecordingPage user={user!} /> : <LoginPage onUserRegister={handleUserLogin} language={language} onLanguageChange={handleLanguageChange}/>}
     </div>
   );
 };

@@ -42,3 +42,7 @@ env.bak/
 venv.bak/
 backend/uploads
 backend/stt_files
+backend/config/config_prod.py
+frontend-ts/src/config/configProd.ts
+frontend-ts/src/config/config.ts
+backend/config/config.py

@@ -5,14 +5,7 @@ import { Input, Button, Checkbox, Radio, Dropdown, Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import styles from '../../style/LoginPage.module.css';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-// import jwtDecode from 'jwt-decode';
-const menu = (
-    <Menu onClick={(e) => setSelectedTherapist(e.key.toString())}>
-        {/* Sample list of therapists. Ideally, this should come from a dynamic source or state */}
-        <Menu.Item key="Therapist 1">Therapist 1</Menu.Item>
-        <Menu.Item key="Therapist 2">Therapist 2</Menu.Item>
-    </Menu>
-);
+
 interface Props {
     onUserRegister?: (userType: 'therapist' | 'patient', details: any) => void;
     language: 'en' | 'he';
@@ -24,6 +17,14 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
     const [password, setPassword] = useState('');
     const [userType, setUserType] = useState<'therapist' | 'patient'>();
     const [selectedTherapist, setSelectedTherapist] = useState('');
+    
+    const menu = (
+        <Menu onClick={(e) => setSelectedTherapist(e.key.toString())}>
+            {/* Sample list of therapists. Ideally, this should come from a dynamic source or state */}
+            <Menu.Item key="Therapist 1">Therapist 1</Menu.Item>
+            <Menu.Item key="Therapist 2">Therapist 2</Menu.Item>
+        </Menu>
+    );
     
     const handleRegister = () => {
         if (onUserRegister && userType) {
@@ -96,7 +97,7 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
     
             {userType === "patient" && (
                 <Dropdown overlay={menu} trigger={['click']}>
-                    <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                    <a href="selection" className="ant-dropdown-link" onClick={e => e.preventDefault()}>
                         {selectedTherapist || 'Select Therapist'} <DownOutlined />
                     </a>
                 </Dropdown>
