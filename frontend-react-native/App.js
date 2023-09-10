@@ -55,14 +55,27 @@
 
 
 import React from 'react';
-import { View } from 'react-native';
-import Upload from './components/Upload'; // Import the Upload component
+import {Text, View} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import CardsGrid from './components/CardsGrid';
+import Results from './components/Results';
+import Upload from './components/Upload';
+// import SessionScreen from './SessionScreen';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Upload /> 
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="CardsGrid">
+        <Stack.Screen name="CardsGrid" component={CardsGrid} options={{ headerTitle:"Home" }} />
+        <Stack.Screen name="ResultsPage" component={Results} />
+        <Stack.Screen name="NewInterview" component={Upload} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    
+    
   );
 }
 
