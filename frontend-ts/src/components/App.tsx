@@ -1,53 +1,71 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './App.css';
-import { RecordingPage } from './RecordingPage';
-import { LoginPage } from './login/LoginPage';
+import React, { useState } from "react";
+import axios from "axios";
+import "./App.css";
+import { RecordingPage } from "./RecordingPage";
+import { LoginPage } from "./login/LoginPage";
 import { User } from "./login/User";
-import config from '../config/configLoader';
-import { UserProvider, useAuth } from './login/authContext';  // update the path accordingly
+import config from "../config/configLoader";
+import { UserProvider, useAuth } from "./login/authContext"; // update the path accordingly
 
 const App: React.FC = () => {
-  const { state, dispatch } = useAuth();
-  const [language, setLanguage] = useState<'en' | 'he'>('en'); // default to 'en'
+  const [language, setLanguage] = useState<"en" | "he">("en"); // default to 'en'
 
-  const handleLanguageChange = (newLang: 'en' | 'he') => {
+  const handleLanguageChange = (newLang: "en" | "he") => {
     setLanguage(newLang);
   };
 
-  const handleUserLogin = async (userType: 'therapist' | 'patient', details: any) => {
-    try {
-      const response = await axios.post(`${config.apiBaseUrl}/login`, {
-        email: details.email,
-        password: details.password,
-        userType: userType,
-      });
-
-      if (response.status === 200) {
-        const userData = response.data;
-        dispatch({
-          type: 'LOGIN',
-          payload: {
-            name: userData.name,
-            language: userData.language,
-            userType: userData.userType,
-            therapistName: userType === 'patient' ? userData.therapistName : undefined,
-            patients: userType === 'therapist' ? userData.patients : undefined
-          }
+  const InnerApp: React.FC = () => {
+    const { state, dispatch } = useAuth();
+    const handleUserLogin = async (
+      userType: "therapist" | "patient",
+      details: any
+    ) => {
+      try {
+        const response = await axios.post(`${config.apiBaseUrl}/login`, {
+          email: details.email,
+          password: details.password,
+          userType: userType,
         });
-      } else {
-        console.error("Login failed:", response.data);
+
+        if (response.status === 200) {
+          const userData = response.data;
+          dispatch({
+            type: "LOGIN",
+            payload: {
+              name: userData.name,
+              language: userData.language,
+              userType: userData.userType,
+              therapistName:
+                userType === "patient" ? userData.therapistName : undefined,
+              patients:
+                userType === "therapist" ? userData.patients : undefined,
+            },
+          });
+        } else {
+          console.error("Login failed:", response.data);
+        }
+      } catch (error) {
+        console.error("An error occurred during login:", error);
       }
-    } catch (error) {
-      console.error("An error occurred during login:", error);
-    }
+    };
+    return (
+      <div className="app">
+        {state.isAuthenticated ? (
+          <RecordingPage user={state.user!} />
+        ) : (
+          <LoginPage
+            onUserRegister={handleUserLogin}
+            language={language}
+            onLanguageChange={handleLanguageChange}
+          />
+        )}
+      </div>
+    );
   };
 
   return (
     <UserProvider>
-      <div className="app">
-        {state.isAuthenticated ? <RecordingPage user={state.user!} /> : <LoginPage onUserRegister={handleUserLogin} language={language} onLanguageChange={handleLanguageChange} />}
-      </div>
+      <InnerApp />
     </UserProvider>
   );
 };
