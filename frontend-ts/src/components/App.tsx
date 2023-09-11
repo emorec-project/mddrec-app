@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
-import { Alert } from 'antd';
 import { RecordedSessions } from './RecordedSessions';
 import { Record } from './Record';
 import { UploadFiles } from './Upload';
+import CalendarPage from './calendar/CalendarPage';
 
 const App: React.FC = () => {
   const [capturing, setCapturing] = useState(false);
@@ -25,8 +25,9 @@ const App: React.FC = () => {
 }, []);
 
   return (
-    <div className="container">
-      <Record 
+    <div >
+      <CalendarPage events={[]}/>
+      {/* <Record 
         capturing={capturing}
         setCapturing={setCapturing}
         recordingAudio={recordingAudio}
@@ -36,7 +37,7 @@ const App: React.FC = () => {
       <UploadFiles 
         addSession={addSession}
       />
-      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} />
+      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} /> */}
     </div>
   );
 };
