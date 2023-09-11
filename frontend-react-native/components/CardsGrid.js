@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import {Text, StyleSheet, View, SectionList, SafeAreaView, FlatList } from 'react-native';
 import AppCard from './AppCard';
 
 const cardProps = [
@@ -19,29 +19,60 @@ const cardProps = [
 
 
 export default function CardsGrid() {
+    // return (
+    //   <FlatList
+    //     data={cardProps}
+    //     keyExtractor={(item, index) => index.toString()}
+    //     renderItem={({ item, index }) => (
+    //       <View key={index} style={styles.cardContainer}>
+    //         <AppCard cardProps={item} />
+    //       </View>
+    //     )}
+    //     contentContainerStyle={styles.container}
+    //     ItemSeparatorComponent={() => (
+    //       <View style={styles.separator} />
+    //     )}
+    //   />
+    // );
+    const sections = [
+        { title: 'Section 1', data: cardProps },
+        // You can add more sections if needed
+      ];
+
     return (
-      <FlatList
-        data={cardProps}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <View key={index} style={styles.cardContainer}>
-            <AppCard cardProps={item} />
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.container}>
+            <SectionList
+                sections={sections}
+                keyExtractor={(item, index) => index.toString()}
+                // renderItem={({ item }) => (
+                // <View style={styles.cardContainer}>
+                //     <AppCard cardProps={item} />
+                // </View>
+                // )}
+                renderItem={({ item }) => (
+                    <AppCard cardProps={item} />
+                )}            
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
+                contentContainerStyle={styles.container}
+            />
           </View>
-        )}
-        contentContainerStyle={styles.container}
-        ItemSeparatorComponent={() => (
-          <View style={styles.separator} />
-        )}
-      />
-    );
+        </SafeAreaView>
+      );
   }
   
   const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1
+      },
     container: {
-      flexGrow: 1,
-      //justifyContent: 'center',
+    // justifyContent: 'center',
+    flexGrow: 1,
+    flex: 1,
+    marginVertical:10
     },
     cardContainer: {
+      flexGrow: 1,
       marginVertical: 50, // Adjust vertical margin
     },
     separator: {

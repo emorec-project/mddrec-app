@@ -30,12 +30,12 @@ const AppCard = (props) => {
 const styles = {
     root: {
     //   marginTop: 150,
-      width: '100%',
-      maxWidth: '85%',
-      height: '75%',
+    //  width: '100%',
+    //  maxWidth: '85%',
+    //  height: '75%',
     //   margin: 'auto',
-    //   justifyContent: 'center',
-      alignItems: 'center',
+       justifyContent: 'center',
+     alignItems: 'center',
     //   textAlign: 'center',
     },
     card: {
