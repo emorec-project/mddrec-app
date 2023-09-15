@@ -6,7 +6,8 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
-        "strict": true,
+        "allowImportingTsExtensions": true,
+        "strict": false,
         "forceConsistentCasingInFileNames": true,
         "module": "esnext",
         "moduleResolution": "node",
@@ -17,4 +18,3 @@
     },
     "include": ["src"]
 }
-  

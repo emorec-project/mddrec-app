@@ -72,7 +72,6 @@ async def upload(file: UploadFile = Form(...),
         # Create the stt_files directory if it doesn't exist
         STT_DIR.mkdir(parents=True, exist_ok=True)
         stt_file_path = STT_DIR / final_file_name
-        # save_file(stt_file, stt_file_path)
         stt_file_to_mongo = Document(
             _id = final_file_name,
             text = stt_file['text'],
@@ -81,7 +80,9 @@ async def upload(file: UploadFile = Form(...),
         )
         
         convert_stt_to_mongo_format(stt_file_to_mongo)
+        # save_file(stt_file, stt_file_path)
         file_saved = save_to_mongo(stt_file_to_mongo)
+        print(f"saved {file_saved} file successfully")
 
         return JSONResponse(content={"file_url": str(final_file_path), "message": "File uploaded successfully."})
 
