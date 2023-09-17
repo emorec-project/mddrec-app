@@ -20,15 +20,6 @@ class Document (BaseModel):
     language: str
 
 
-class TranscriptDocument:
-    def __init__(self, id, retval):
-        self.id = id
-        self.retval = ReturnValue(**retval)
-
-class ReturnValue:
-    def __init__(self, punct, words):
-        self.punct = punct
-        self.words = [Word(**word_data) for word_data in words]
 
 class Word:
     def __init__(self, start, end, word, punct):
@@ -36,3 +27,13 @@ class Word:
         self.end = end
         self.word = word
         self.punct = punct
+        
+class ReturnValue:
+    def __init__(self, punct, words: List[Word]):
+        self.punct = punct
+        self.words = words
+
+class TranscriptDocument:
+    def __init__(self, id, retval: ReturnValue):
+        self.id = id
+        self.retval = retval

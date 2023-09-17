@@ -8,6 +8,7 @@ import data.mongo as repo
 import os
 import pathlib
 from data import mongo
+from stt_transcript import get_transript_file
 
 app = FastAPI()
 
@@ -84,6 +85,9 @@ async def upload(file: UploadFile = Form(...),
         file_saved = save_to_mongo(stt_file_to_mongo)
         print(f"saved {file_saved} file successfully")
 
+        loaded_from_mongo = get_transript_file(file_saved['insertedDoc'])
+        print(str(loaded_from_mongo.id))
+        
         return JSONResponse(content={"file_url": str(final_file_path), "message": "File uploaded successfully."})
 
     return JSONResponse(content={"message": "Chunk received."})
