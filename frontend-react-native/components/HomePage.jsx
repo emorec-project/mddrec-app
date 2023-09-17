@@ -1,3 +1,5 @@
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import CardsGrid from './CardsGrid';
 import Results from './Results';
