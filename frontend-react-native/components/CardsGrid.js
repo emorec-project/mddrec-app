@@ -15,25 +15,22 @@ const cardProps = [
     imageUrl: require('../temp-images/huge-icon.png'),
     navigationLink: 'ResultsPage',
   },
+  // {
+  //   title: 'התחברות',
+  //   paragraph: 'כאן ניתן להתחבר למשתמש שלך',
+  //   imageUrl: require('../temp-images/huge-icon.png'),
+  //   navigationLink: 'LogIn',
+  // },
+  // {
+  //   title: 'הרשמה',
+  //   paragraph: 'כאן ניתן להירשם למערכת',
+  //   imageUrl: require('../temp-images/huge-icon.png'),
+  //   navigationLink: 'SignIn',
+  // }
 ];
 
 
 export default function CardsGrid() {
-    // return (
-    //   <FlatList
-    //     data={cardProps}
-    //     keyExtractor={(item, index) => index.toString()}
-    //     renderItem={({ item, index }) => (
-    //       <View key={index} style={styles.cardContainer}>
-    //         <AppCard cardProps={item} />
-    //       </View>
-    //     )}
-    //     contentContainerStyle={styles.container}
-    //     ItemSeparatorComponent={() => (
-    //       <View style={styles.separator} />
-    //     )}
-    //   />
-    // );
     const sections = [
         { title: 'Section 1', data: cardProps },
         // You can add more sections if needed
@@ -58,6 +55,7 @@ export default function CardsGrid() {
             />
           </View>
         </SafeAreaView>
+      
       );
   }
   
@@ -68,7 +66,6 @@ export default function CardsGrid() {
     container: {
     // justifyContent: 'center',
     flexGrow: 1,
-    flex: 1,
     marginVertical:10
     },
     cardContainer: {
