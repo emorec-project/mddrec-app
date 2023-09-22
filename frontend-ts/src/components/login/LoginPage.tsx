@@ -1,7 +1,7 @@
 // LoginPage.tsx
 import React, { useState } from 'react';
 import CryptoJS from 'crypto-js';
-import { Input, Button, Checkbox, Radio, Dropdown, Menu } from 'antd';
+import { Input, Button, Form, Checkbox, Radio, Dropdown, Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import styles from '../../style/LoginPage.module.css';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
@@ -15,12 +15,46 @@ interface Props {
     onLanguageChange?: (lang: 'en' | 'he') => void;
 }
 
-export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguageChange  }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+const translations = {
+    en: {
+        signUp: 'Sign Up',
+        login: 'Already a user? Login',
+        email: 'Email',
+        password: 'Password',
+        isTherapist: "Are you a therapist?",
+        isPatient: "Are you a patient?",
+        changeLanguage: "Change language",
+        rememberMe: 'Remember Me',
+        forgotPassword: 'Forgot Password?',
+        invalidEmail: 'The input is not valid Email'
+    },
+    he: {
+        signUp: 'הרשמה',
+        login: 'כבר משתמש? התחבר',
+        email: 'דוא"ל',
+        password: 'סיסמה',
+        isTherapist: "האם הינך מטפל?",
+        isPatient: "האם הינך מטופל?",
+        changeLanguage: "החלף שפה",
+        rememberMe: 'זכור אותי',
+        forgotPassword: 'שכחת סיסמה?',
+        invalidEmail: 'הקלט אינו דוא"ל חוקי',
+    }
+}
+
+export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguageChange }) => {
     const [userType, setUserType] = useState<'therapist' | 'patient'>();
     const [selectedTherapist, setSelectedTherapist] = useState('');
-    
+    const [form] = Form.useForm();
+
+    const emailRules = [
+        {
+            required: true,
+            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: translations[language].invalidEmail,
+        },
+    ];
+
     const menu = (
         <Menu onClick={(e) => setSelectedTherapist(e.key.toString())}>
             {/* Sample list of therapists. Ideally, this should come from a dynamic source or state */}
@@ -30,6 +64,9 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
     );
 
     const handleRegister = async () => {
+        const values = form.getFieldsValue();
+        const { email, password, userType, rememberMe } = values;
+
         if (onUserRegister && userType) {
             // Hash the password
             const hashedPassword = CryptoJS.SHA256(password).toString();
@@ -40,7 +77,8 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
                         email: email,
                         password: hashedPassword,
                         selectedTherapist: selectedTherapist
-                    }});
+                    }
+                });
                 console.log(response.data);
             } catch (error) {
                 message.error("Error during registration");
@@ -48,21 +86,24 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
         } else {
             message.error("User type is not selected");
         }
-    }    
-    
+    }
+
     const handleLogin = async () => {
+        const values = form.getFieldsValue();
+        const email = values.email;
+        const password = values.password;
+
         try {
             const response = await axios.post(`${config.backendURL}${config.tokenEndpoint}`, {
                 username: email,
                 password
-            });            
-            console.log(response.data);
+            });
             // Here you can save the token to local storage or state and navigate the user to another page
         } catch (error) {
             message.error("Error during login");
         }
     }
-     
+
     const handleGoogleSuccess = async (response: any) => {
         // We'll get the user details from Google and can send them to your backend to create or authenticate a user.
         const userDetails = {
@@ -77,7 +118,7 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             message.error("Error during registration with Google");
         }
     };
-    
+
 
     const handleGoogleFailure = () => {
         message.error('Google Sign In was unsuccessful. Try again later.');
@@ -90,68 +131,57 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
     }
 
 
-    const translations = {
-        en: {
-            signUp: 'Sign Up',
-            login: 'Already a user? Login',
-            email: 'Email',
-            password: 'Password',
-            isTherapist: "Are you a therapist?",
-            isPatient: "Are you a patient?",
-            changeLanguage: "Change language",
-            rememberMe: 'Remember Me',
-            forgotPassword: 'Forgot Password?'
-        },
-        he: {
-            signUp: 'הרשמה',
-            login: 'כבר משתמש? התחבר',
-            email: 'דוא"ל',
-            password: 'סיסמה',
-            isTherapist: "האם הינך מטפל?",
-            isPatient: "האם הינך מטופל?",
-            changeLanguage: "החלף שפה",
-            rememberMe: 'זכור אותי',
-            forgotPassword: 'שכחת סיסמה?'
-        }
-    }
-
     return (
         <div dir={language === 'he' ? 'rtl' : 'ltr'} className={`${styles["login-container"]} ${language === 'he' ? styles.rtl : ''}`}>
-            <Input placeholder={translations[language].email} value={email} onChange={e => setEmail(e.target.value)} />
-            <Input placeholder={translations[language].password} type="password" value={password} onChange={e => setPassword(e.target.value)} />
-    
-            <Radio.Group onChange={e => setUserType(e.target.value)} value={userType}>
-                <Radio value="therapist">{translations[language].isTherapist}</Radio>
-                <Radio value="patient">{translations[language].isPatient}</Radio>
-            </Radio.Group>
-    
-            {userType === "patient" && (
-                <Dropdown overlay={menu} trigger={['click']}>
-                    <a href="selection" className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                        {selectedTherapist || 'Select Therapist'} <DownOutlined />
-                    </a>
-                </Dropdown>
-            )}
-    
-            <div className={styles["inline-elements"]}>
-                <button onClick={handleRegister}>{translations[language].signUp}</button>
-                <Button onClick={toggleLanguage}>{translations[language].changeLanguage}</Button>
-            </div>
-    
-            <GoogleOAuthProvider clientId="YOUR CLIENT ID">
-                <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleFailure}
-                    // buttonText={translations[language].googleSignUp}
-                />
-            </GoogleOAuthProvider>
-    
-            <div className={styles["inline-elements"]}>
-                <button onClick={handleLogin}>{translations[language].login}</button>
-                <Checkbox>{translations[language].rememberMe}</Checkbox>
-            </div>
-    
-            <button>{translations[language].forgotPassword}</button>    
+            <Form form={form} style={{ marginBottom: "0px" }} onFinish={handleRegister} layout="vertical">
+                <Form.Item name="email" rules={emailRules}>
+                    <Input placeholder={translations[language].email} />
+                </Form.Item>
+
+                <Form.Item name="password">
+                    <Input.Password placeholder={translations[language].password} />
+                </Form.Item>
+
+                <Form.Item name="userType">
+                    <Radio.Group onChange={e => setUserType(e.target.value)} value={userType}>
+                        <Radio value="therapist">{translations[language].isTherapist}</Radio>
+                        <Radio value="patient">{translations[language].isPatient}</Radio>
+                    </Radio.Group>
+                </Form.Item>
+
+                {userType === "patient" && (
+                    <Form.Item name="selectedTherapist">
+                        <Dropdown overlay={menu} trigger={['click']}>
+                            <a href="selection" className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                {selectedTherapist || 'Select Therapist'} <DownOutlined />
+                            </a>
+                        </Dropdown>
+                    </Form.Item>
+                )}
+
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" block>{translations[language].signUp}</Button>
+                </Form.Item>
+
+                <Form.Item className={styles["inline-elements"]}>
+                    <Button onClick={toggleLanguage} block>{translations[language].changeLanguage}</Button>
+                    <Button onClick={handleLogin} block>{translations[language].login}</Button>
+                </Form.Item>
+
+                <Form.Item className={styles["inline-elements"]}>
+                    <Checkbox name="rememberMe" defaultChecked={false}>
+                        {translations[language].rememberMe}
+                    </Checkbox>
+                    <Button type="link">{translations[language].forgotPassword}</Button>
+                </Form.Item>
+
+                <Form.Item>
+                    <GoogleOAuthProvider clientId="YOUR CLIENT ID">
+                        <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleFailure} />
+                    </GoogleOAuthProvider>
+                </Form.Item>
+            </Form>
+
         </div>
     )
 }

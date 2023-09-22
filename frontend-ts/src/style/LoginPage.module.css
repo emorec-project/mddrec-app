@@ -3,13 +3,29 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    padding: 1rem;
+    height: 60vh;
+    max-width: 350px; /* Reduced the max-width */
+    margin: auto; 
+    padding: 0.25rem; 
     box-sizing: border-box;
 }
 
 .rtl {
     direction: rtl;
+}
+
+.inline-elements {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Align vertically */
+    width: 100%;
+}
+
+
+button, .ant-btn {
+    font-size: 0.8rem; /* Reduced font size */
+    padding: 0.2rem 0.4rem; 
+    transition: background-color 0.3s ease-in-out;
 }
 
 button:hover, .ant-btn:hover {
@@ -20,25 +36,36 @@ button:active, .ant-btn:active {
     background-color: #5a80b1;
 }
 
-.ant-input {
-    padding: 0.5rem;
+.ant-input, .ant-input-password {
+    font-size: 0.8rem; /* Reduced font size */
+    padding: 0.2rem 0.4rem; 
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1); 
+}
+
+.ant-form-item {
+    margin-bottom: 0.2rem; /* Further reduced margin */
 }
 
 .ant-radio-group {
     display: flex;
     justify-content: space-between;
+    padding: 0.2rem; 
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    overflow: hidden;
 }
 
 .ant-dropdown-link {
+    font-size: 0.8rem; /* Reduced font size */
     display: block;
-    padding: 0.5rem 1rem;
+    padding: 0.2rem 0.4rem; 
     background-color: #f8f9fa;
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     text-decoration: none;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .ant-dropdown-link:hover {
