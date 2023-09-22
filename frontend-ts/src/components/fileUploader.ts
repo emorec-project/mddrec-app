@@ -1,4 +1,5 @@
 import axios from 'axios';
+import config from '../config/config';
 
 
 export const uploadFile = (file: File, sessionId: string, callback: (url: string) => void) => {
@@ -18,7 +19,7 @@ export const uploadFile = (file: File, sessionId: string, callback: (url: string
         formData.append('chunksCount', chunksCount.toString());
         formData.append('sessionId', sessionId); 
 
-        axios.post('http://localhost:8000/blobs_manager/upload/', formData, {
+        axios.post(`${config.backendURL}${config.uploadEndpoint}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

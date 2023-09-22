@@ -7,6 +7,7 @@ import styles from '../../style/LoginPage.module.css';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import axios from 'axios';
 import { message } from 'antd';
+import config from '../../config/config';
 
 interface Props {
     onUserRegister?: (userType: 'therapist' | 'patient', details: any) => void;
@@ -33,10 +34,13 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             // Hash the password
             const hashedPassword = CryptoJS.SHA256(password).toString();
             try {
-                const response = await axios.post('/register/', {
+                const response = await axios.post(`${config.backendURL}${config.registerEndpoint}`, {
                     user_type: userType,
-                    details: { email, password: hashedPassword, selectedTherapist }
-                });
+                    details: {
+                        email: email,
+                        password: hashedPassword,
+                        selectedTherapist: selectedTherapist
+                    }});
                 console.log(response.data);
             } catch (error) {
                 message.error("Error during registration");
@@ -48,10 +52,10 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
     
     const handleLogin = async () => {
         try {
-            const response = await axios.post('/token/', {
+            const response = await axios.post(`${config.backendURL}${config.tokenEndpoint}`, {
                 username: email,
                 password
-            });
+            });            
             console.log(response.data);
             // Here you can save the token to local storage or state and navigate the user to another page
         } catch (error) {
@@ -66,7 +70,7 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             googleId: response.profileObj.googleId
         };
         try {
-            const res = await axios.post('/register_with_google/', userDetails);
+            const res = await axios.post(`${config.backendURL}${config.registerEndpoint}`, userDetails);
             console.log(res.data);
             // Here you can save the token to local storage or state and navigate the user to another page
         } catch (error) {

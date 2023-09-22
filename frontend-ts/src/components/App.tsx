@@ -21,7 +21,7 @@ const App: React.FC = () => {
       details: any
     ) => {
       try {
-        const response = await axios.post(`${config.apiBaseUrl}/login`, {
+        const response = await axios.post(`${config.backendURL}/login`, {
           email: details.email,
           password: details.password,
           userType: userType,

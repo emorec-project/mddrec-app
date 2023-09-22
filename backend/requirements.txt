@@ -2,6 +2,11 @@ fastapi[all]
 uvicorn
 # git+https://github.com/openai/whisper.git
 ffmpeg
+setuptools
+pymongos
 pymongo[tls,srv]
 pydantic
 dnspython
+requests
+bcrypt
+google-auth

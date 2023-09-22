@@ -44,3 +44,11 @@ The application will start on [http://localhost:3000](http://localhost:3000) if 
 
 - [React](https://reactjs.org/) - A JavaScript library for building user interfaces
 - [Ant Design](https://ant.design/) - A design system with values of Nature and Determinacy for better user experience of enterprise applications
+
+
+### Debugging
+
+It is always recommended to use the debugger.
+In React its super easy using the devtools, and avoid the need for printing variables:
+
+![enter image description here](https://i.stack.imgur.com/ePQrF.gif)

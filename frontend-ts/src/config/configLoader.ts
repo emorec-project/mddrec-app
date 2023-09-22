@@ -4,7 +4,7 @@ let profileConfig = {};
 
 switch (process.env.REACT_APP_PROFILE) {
     case 'prod':
-        profileConfig = require('./configProd').default;
+        // profileConfig = require('./configProd').default;
         break;
     case 'test':
         profileConfig = require('./configTest').default;

@@ -1,23 +1,48 @@
+from pydantic import BaseModel
+from typing import Optional, List
+from user_types import UserRegister
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import HTTPException, Depends
+# from passlib.context import CryptContext
+from pymongo import MongoClient
+from config_loader import *
 import bcrypt
+
+# Connect to your MongoDB database
+client = MongoClient(MONGO_URL)
+db = client[MONGO_DB_NAME]
+users = db[MONGO_USERS_COLLECTION]
+
+# Initialize password hasher
+# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-async def register_user(user_type: str, details: dict):
-    hashed_password = bcrypt.hashpw(details['password'].encode('utf-8'), bcrypt.gensalt())
-    # Here, add the logic to save the hashed_password and other details to the database
+async def register_user(user: UserRegister):
+    hashed_password = bcrypt.hashpw(user.details.password.encode('utf-8'), bcrypt.gensalt())
+    user.details.password = hashed_password
+    
+    # Convert user.details to dictionary before insertion
+    user_details_dict = user.details.dict()
 
-    if user_type == "therapist":
-        # Add the therapist to your database
-        pass
-    elif user_type == "patient":
-        # Add the patient to your database
+    if user.user_type == "therapist":
+        # Check if user already exists
+        if users.find_one({'email': user_details_dict['email']}):
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Insert the new user into the database
+        result = users.insert_one(user_details_dict)
+
+        # Return a response
+        return {"ok": bool(result.inserted_id)}
+    elif user.user_type == "patient":
+        # Here you would typically perform some kind of operation to add the patient to your database.
         pass
     else:
         raise HTTPException(status_code=400, detail="Invalid user type")
 
     return {"status": "success"}
+
 
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = get_user_from_database(form_data.username)  # Your custom function to retrieve a user from your database
@@ -35,7 +60,6 @@ from google.auth.transport import requests
 
 GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"
 
-@app.post("/google_login/")
 async def google_login(token: str):
     try:
         # Validate the token

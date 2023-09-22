@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: FastAPI (venv)",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "env": {
+                "PROFILE": "test"
+            },
+            "args": [
+                "server:app",
+                "--reload",
+                "--port",
+                "8000"
+            ],
+            "cwd": "${workspaceFolder}/backend",
+            "preLaunchTask": "Activate Virtual Environment"
+        },
+        {
+            "name": "Python: FastAPI (no venv)",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "env": {
+                "PROFILE": "test"
+            },
+            "args": [
+                "server:app",
+                "--reload",
+                "--port",
+                "8000"
+            ],
+            "cwd": "${workspaceFolder}/backend"
+        }
+    ]
+}
