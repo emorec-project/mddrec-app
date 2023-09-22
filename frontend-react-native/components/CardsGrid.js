@@ -2,35 +2,9 @@ import React from 'react';
 import {Text, StyleSheet, View, SectionList, SafeAreaView, FlatList } from 'react-native';
 import AppCard from './AppCard';
 
-const cardProps = [
-  {
-    title: 'הקלטת ריאיון',
-    paragraph: 'כאן ניתן להקליט ריאיון עם מטופל חדש',
-    imageUrl: require('../temp-images/huge-icon.png'),
-    navigationLink: 'NewInterview',
-  },
-  {
-    title: 'מסך תוצאות',
-    paragraph: 'כאן ניתן לצפות בתוצאות האבחון',
-    imageUrl: require('../temp-images/huge-icon.png'),
-    navigationLink: 'ResultsPage',
-  },
-  // {
-  //   title: 'התחברות',
-  //   paragraph: 'כאן ניתן להתחבר למשתמש שלך',
-  //   imageUrl: require('../temp-images/huge-icon.png'),
-  //   navigationLink: 'LogIn',
-  // },
-  // {
-  //   title: 'הרשמה',
-  //   paragraph: 'כאן ניתן להירשם למערכת',
-  //   imageUrl: require('../temp-images/huge-icon.png'),
-  //   navigationLink: 'SignIn',
-  // }
-];
 
-
-export default function CardsGrid() {
+export default function CardsGrid({ cardProps }) 
+{
     const sections = [
         { title: 'Section 1', data: cardProps },
         // You can add more sections if needed
@@ -42,11 +16,6 @@ export default function CardsGrid() {
             <SectionList
                 sections={sections}
                 keyExtractor={(item, index) => index.toString()}
-                // renderItem={({ item }) => (
-                // <View style={styles.cardContainer}>
-                //     <AppCard cardProps={item} />
-                // </View>
-                // )}
                 renderItem={({ item }) => (
                     <AppCard cardProps={item} />
                 )}            

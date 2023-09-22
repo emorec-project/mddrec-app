@@ -1,17 +1,33 @@
-import { Alert, Button, TextInput, View, StyleSheet } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Button, TextInput, View, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
 
 
-function onLogin(username,password) {
-    Alert.alert('Credentials', `${username.username} + ${password.password}`);
-  }
-
-const Login=()=>{
+const LogIn=()=>{
+    //const navigation = useNavigation();
     const [username, setusername] = useState("");
     const [password, setPassword] = useState("");
 
+    function onLogin(username,password) {
+        Alert.alert('Credentials', `${username.username} + ${password.password}`);
+        //TODO: get validation from the server 
+        // if(session.isLogin){
+        //   return(
+        //     <HomePage></HomePage>
+        //   )
+        // }else{
+        //   <Login></Login>
+        // }
+        //navigation.navigate("CardsGrid");
+        //navigation.canGoBack(false);
+        //navigation.goBack();
+      }
+
     return (
         <View style={styles.container}>
+        <Image
+        style={styles.logo}
+        source={require('../temp-images/huge-icon.png')}
+        ></Image>
           <TextInput
             value={username}
             onChangeText={(username) => setusername( {username} )}
@@ -51,7 +67,10 @@ const styles = StyleSheet.create({
       borderColor: 'black',
       marginBottom: 10,
     },
+    logo: {
+     
+    },
   });
 
 
-  export default Login;
+  export default LogIn;

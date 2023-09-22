@@ -54,13 +54,67 @@
 // App.js
 
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import HomePage from './components/HomePage';
+import CardsGrid from './components/CardsGrid';
 
 export default function App() {
-  return (
-   <HomePage></HomePage>
+  return(
+    <HomePage></HomePage>
   );
 }
+
+// import React from 'react';
+// import { NavigationContainer } from '@react-navigation/native';
+// import { createStackNavigator } from '@react-navigation/stack';
+// import { View, Text, SafeAreaView, SectionList, StyleSheet } from 'react-native';
+// import Results from './components/Results';
+
+// const Stack = createStackNavigator();
+
+// const DATA = [
+//   {
+//     title: 'Section 1',
+//     data: Array(50).fill(null).map((_, i) => `Item ${i + 1}`),
+//   },
+// ];
+
+// function dap() {
+//   return (
+//     <SafeAreaView style={styles.safeArea}>
+//       <SectionList
+//         sections={DATA}
+//         keyExtractor={(item, index) => index.toString()}
+//         renderItem={({ item }) => (
+//           <View style={styles.item}>
+//             <Text>{item}</Text>
+//           </View>
+//         )}
+//       />
+//     </SafeAreaView>
+//   );
+// }
+
+// export default function App() {
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator initialRouteName="CardsGrid">
+//         <Stack.Screen name="CardsGrid" component={dap} options={{ headerTitle: "Home" }} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   safeArea: {
+//     flex: 1,
+//   },
+//   item: {
+//     padding: 16,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+// });
+
 
 
