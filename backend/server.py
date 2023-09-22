@@ -1,4 +1,3 @@
-# from stt_model import get_stt_from_path
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
 from dtos import Document
@@ -10,7 +9,11 @@ import pathlib
 import os
 from login import register_user, login, oauth2_scheme
 from config_loader import *
+import os
 
+if os.getenv('PROFILE') == 'prod':
+    from stt_model import get_stt_from_path
+    
 app = FastAPI()
 
 BASE_DIR = Path(__file__).resolve().parent
