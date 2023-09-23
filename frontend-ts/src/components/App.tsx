@@ -4,6 +4,7 @@ import { Alert } from 'antd';
 import { RecordedSessions } from './RecordedSessions';
 import { Record } from './Record';
 import { UploadFiles } from './Upload';
+import { getTranscript } from './transcriptGetter'
 
 const App: React.FC = () => {
   const [capturing, setCapturing] = useState(false);
@@ -36,7 +37,7 @@ const App: React.FC = () => {
       <UploadFiles 
         addSession={addSession}
       />
-      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} />
+      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} onButtonClick={getTranscript}/>
     </div>
   );
 };

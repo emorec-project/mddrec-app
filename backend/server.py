@@ -1,6 +1,7 @@
 from stt_model import get_stt_from_path
 from fastapi import FastAPI, UploadFile, Form
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from dtos import Document
 from pathlib import Path
 import shutil
@@ -11,6 +12,13 @@ from data import mongo
 from stt_transcript import get_transript_file
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 CHUNKS_DIR = BASE_DIR / 'tmp' / 'chunks'
@@ -29,6 +37,9 @@ async def create_items(docs: list[Document]):
 async def find_doc_by_id(doc_id: str):
     return repo.find_doc_by_id(doc_id)
 
+@app.get("/get_transcript_by_id/{doc_id}")
+async def get_transcript_by_id(doc_id: str):
+    return get_transript_file(doc_id)
 
 @app.post("/blobs_manager/upload/")
 async def upload(file: UploadFile = Form(...),
