@@ -1,44 +1,72 @@
-import React, { useEffect, useRef, useState } from 'react';
-import './App.css';
-import { Alert } from 'antd';
-import { RecordedSessions } from './RecordedSessions';
-import { Record } from './Record';
-import { UploadFiles } from './Upload';
-import { getTranscript } from './transcriptGetter'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./App.css";
+import { RecordingPage } from "./RecordingPage";
+import { LoginPage } from "./login/LoginPage";
+import { User } from "./login/User";
+import config from "../config/configLoader";
+import { UserProvider, useAuth } from "./login/authContext";
+import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 const App: React.FC = () => {
-  const [capturing, setCapturing] = useState(false);
-  const [recordingAudio, setRecordingAudio] = useState(false);
-  const [sessions, setSessions] = useState<string[]>([]);
+  const [language, setLanguage] = useState<"en" | "he">("en"); // default to 'en'
 
-  const addSession = (url: string) => {
-    console.log("A new session has been recorded", url)
-    setSessions(prev => [...prev, url]);
+  const handleLanguageChange = (newLang: "en" | "he") => {
+    setLanguage(newLang);
   };
 
-  const toggleRecordingMode = () => {
-    setRecordingAudio(!recordingAudio);
-  }
-  useEffect(() => {
-    return () => {
-        sessions.forEach(URL.revokeObjectURL);
+  const InnerApp: React.FC = () => {
+    const { state, dispatch } = useAuth();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      if (state.isAuthenticated) {
+        navigate('/recording');  // Navigate to the RecordingPage
+      } else {
+        navigate('/login');
+      }
+    }, [state.isAuthenticated, navigate]);
+
+    const handleUserLogin = (userData: User) => {
+      dispatch({
+        type: "LOGIN",
+        payload: {
+          email: userData.email,
+          name: userData.name,
+          language: userData.language,
+          userType: userData.userType,
+          therapistName: userData.userType === "patient" ? userData.therapistName : undefined,
+          patients: userData.userType === "therapist" ? userData.patients : undefined,
+        },
+      });
     };
-}, []);
+    return (
+      <div className="app">
+        {state.isAuthenticated ? (
+          <RecordingPage user={state.user!} />
+        ) : (
+          <LoginPage
+            onUserDetails={handleUserLogin}
+            onUserLogin={handleUserLogin}
+            language={language}
+            onLanguageChange={handleLanguageChange}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+  }
 
   return (
-    <div className="container">
-      <Record 
-        capturing={capturing}
-        setCapturing={setCapturing}
-        recordingAudio={recordingAudio}
-        toggleRecordingMode={toggleRecordingMode}
-        addSession={addSession}
-      />
-      <UploadFiles 
-        addSession={addSession}
-      />
-      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} onButtonClick={getTranscript}/>
-    </div>
+    <BrowserRouter>
+      <UserProvider>
+        <InnerApp />
+      </UserProvider>
+    </BrowserRouter>
   );
 };
 
