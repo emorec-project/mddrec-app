@@ -7,7 +7,7 @@ import {
   isPresentInLocalStorage,
   localSave
 } from "./local-storage.ts";
-import DEMO_TRANSCRIPT from "../temp_data/transcriptExampleData.json"
+import DEMO_TRANSCRIPT from "../../data/transcriptExampleData.json"
 //@ts-ignore
 import style from "./TranscriptEditor.css";
 
