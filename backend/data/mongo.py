@@ -1,10 +1,12 @@
 import pymongo
 from dtos import Document
+from config_loader import *
 
 MONGO_ID = "_id"
 DOCUMENT_ID = "id"
 
-myclient = pymongo.MongoClient("mongodb+srv://mdd-access:mdd-read-write@learn0.fu403zg.mongodb.net/")
+myclient = pymongo.MongoClient(MONGO_URL)
+# myclient = pymongo.MongoClient(MONGO_DETAILS)
 mydb = myclient["learn0"]
 mycol = mydb["sample"]
 

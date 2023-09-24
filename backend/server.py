@@ -1,14 +1,33 @@
-from stt_model import get_stt_from_path
-from fastapi import FastAPI, UploadFile, Form
+from fastapi import FastAPI, UploadFile, Form, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from dtos import Document
 from pathlib import Path
 import shutil
 import data.mongo as repo
 import os
 import pathlib
+import os
+from login import register_user, handle_login, oauth2_scheme, google_login
+from config_loader import *
+import os
+from pydantic import BaseModel
+from typing import Optional, List
+from app_types.user_types import UserDetails
 
+if os.getenv('PROFILE') == 'prod':
+    from stt_model import get_stt_from_path
+    
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 CHUNKS_DIR = BASE_DIR / 'tmp' / 'chunks'
@@ -77,3 +96,15 @@ async def upload(file: UploadFile = Form(...),
 def save_file(file_to_save, path):
     with open(f'{path}.txt', 'w') as file:
         file.write(file_to_save)
+
+@app.post("/register/")
+async def register_endpoint(user: UserDetails):
+    return await register_user(user)
+
+@app.post("/token/")
+async def login_endpoint(form_data: OAuth2PasswordRequestForm = Depends()):
+    return await handle_login(form_data)
+
+@app.post("/google_login/")
+async def google_login_endpoint(token: str):
+    return await google_login(token)

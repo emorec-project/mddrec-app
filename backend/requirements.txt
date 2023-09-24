@@ -1,5 +1,13 @@
 fastapi[all]
 uvicorn
-git+https://github.com/openai/whisper.git
+# git+https://github.com/openai/whisper.git
 ffmpeg
-pymongo
+setuptools
+pymongos
+pymongo[tls,srv]
+pydantic
+dnspython
+requests
+bcrypt
+google-auth
+python-jose[cryptography]
