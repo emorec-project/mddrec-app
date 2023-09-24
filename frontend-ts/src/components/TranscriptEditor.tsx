@@ -10,7 +10,6 @@ import {
 import DEMO_TRANSCRIPT from "../temp_data/transcriptExampleData.json"
 //@ts-ignore
 import style from "./TranscriptEditor.css";
-// const style = require("./index.module.scss")
 
 const DEMO_TITLE ="TED Talk | Kate Darling - Why we have an emotional connection to robots"
 const DEMO_MEDIA_URL = "https://download.ted.com/talks/KateDarling_2018S-950k.mp4"
@@ -113,23 +112,6 @@ const TEditor = () => {
     setData(newData);
   };
 
-  // const exportTranscript = () => {
-  //   console.log("export");
-  //   // eslint-disable-next-line react/no-string-refs
-  //   //@ts-ignore
-  //   const { data_, ext } = transcriptEditorRef.current.getEditorContent(
-  //     data.exportFormat
-  //   );
-  //   let tmpData = data_;
-  //   if (ext === "json") {
-  //     tmpData = JSON.stringify(data_, null, 2);
-  //   }
-  //   if (ext !== "docx") {
-  //     //@ts-ignore
-  //     download(tmpData, `${data_.mediaUrl}.${ext}`);
-  //   }
-  // };
-
   // https://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
   const download = (content, filename, contentType) => {
     console.log("download");
@@ -149,11 +131,6 @@ const TEditor = () => {
     localStorage.clear();
     console.info("Cleared local storage.");
   };
-
-  // const handleAnalyticsEvents = event => {
-  //   //@ts-ignore
-  //   setData({ analyticsEvents: [...data.analyticsEvents, event] });
-  // };
 
   const handleChangeTranscriptTitle = newTitle => {
     const newData = {...data}
