@@ -1,21 +1,13 @@
 // LoginPage.tsx
-import React, { useState } from 'react';
-import CryptoJS from 'crypto-js';
-import { Input, Button, Form, Checkbox, Radio, Dropdown, Menu } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-import styles from '../../style/LoginPage.module.css';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { Form, message } from 'antd';
 import axios, { AxiosResponse } from 'axios';
-import { message } from 'antd';
+import React, { useState } from 'react';
 import config from '../../config/config';
+import styles from '../../style/LoginPage.module.css';
+import { LoginForm } from './LoginForm';
+import { RegisterForm } from './RegisterForm';
 import { User } from './User';
 
-interface UserDetails {
-    user_type: 'therapist' | 'patient';
-    email: string;
-    password: string;
-    selected_therapist?: string;
-}
 
 interface Props {
     onUserDetails: (user: User) => void;
@@ -24,7 +16,7 @@ interface Props {
     onLanguageChange?: (lang: 'en' | 'he') => void;
 }
 
-const translations = {
+export const translations = {
     en: {
         signUp: 'Sign Up',
         goRegister: 'Don\'t have an account? Sign Up!',
@@ -55,92 +47,25 @@ const translations = {
     }
 }
 
+export const emailRules = (language) => [
+    {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: translations[language].invalidEmail,
+    },
+];
+
+
 export const LoginPage: React.FC<Props> = ({ onUserDetails, onUserLogin, language, onLanguageChange }) => {
     const [userType, setUserType] = useState<'therapist' | 'patient'>();
     const [selectedTherapist, setSelectedTherapist] = useState('');
-    const [isLoginMode, setIsLoginMode] = useState(false);
+    const [isLoginMode, setIsLoginMode] = useState(true);
     const [form] = Form.useForm();
-
-    const emailRules = [
-        {
-            required: true,
-            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: translations[language].invalidEmail,
-        },
-    ];
 
     const toggleLoginMode = () => {
         setIsLoginMode(!isLoginMode);
     };
 
-    const menu = (
-        <Menu onClick={(e) => setSelectedTherapist(e.key.toString())}>
-            {/* Sample list of therapists. Ideally, this should come from a dynamic source or state */}
-            <Menu.Item key="Therapist 1">Therapist 1</Menu.Item>
-            <Menu.Item key="Therapist 2">Therapist 2</Menu.Item>
-        </Menu>
-    );
-
-    const handleRegister = async () => {
-        try {
-            const values = await form.validateFields();
-            const { email, password, userType, rememberMe } = values;
-
-            if (userType) {
-                const userDetails: UserDetails = {
-                    user_type: userType,
-                    email: email,
-                    password: password
-                };
-
-                if (userType === 'patient') {
-                    userDetails.selected_therapist = selectedTherapist;
-                }
-
-                const response: AxiosResponse = await axios.post(
-                    `${config.backendURL}${config.registerEndpoint}`,
-                    userDetails
-                );
-                const registeredUser: User = {
-                    email: email,
-                    language: language,
-                    userType: userType,
-                    therapistName: selectedTherapist
-                };
-                onUserDetails(registeredUser);
-            } else {
-                message.error('User type is not selected');
-            }
-        } catch (error) {
-            message.error('Error during registration');
-        }
-    };
-
-    const handleLogin = async () => {
-        try {
-            const values = await form.validateFields();
-            const email = values.email;
-            const password = values.password;
-
-            const form_data = new FormData();
-            form_data.append('username', email);
-            form_data.append('password', password);
-
-            const response: AxiosResponse = await axios.post(
-                `${config.backendURL}${config.tokenEndpoint}`,
-                form_data
-            );
-            localStorage.setItem('token', response.data.access_token);
-            const loggedUser: User = {
-                email: email,
-                language: language,
-                userType: response.data.userType
-            };
-            onUserLogin(loggedUser);
-        } catch (error) {
-            message.error('Error during login');
-        }
-    };
 
     const handleGoogleSuccess = async (response: any) => {
         const userDetails = {
@@ -172,59 +97,27 @@ export const LoginPage: React.FC<Props> = ({ onUserDetails, onUserLogin, languag
 
     return (
         <div dir={language === 'he' ? 'rtl' : 'ltr'} className={`${styles["login-container"]} ${language === 'he' ? styles.rtl : ''}`}>
-            <Form form={form} style={{ marginBottom: "0px" }} onFinish={isLoginMode ? handleLogin : handleRegister} layout="vertical">
-                <Form.Item name="email" rules={emailRules}>
-                    <Input placeholder={translations[language].email} />
-                </Form.Item>
-
-                <Form.Item name="password">
-                    <Input.Password placeholder={translations[language].password} />
-                </Form.Item>
-
-                {!isLoginMode && (
-                    <>
-                        <Form.Item name="userType">
-                            <Radio.Group onChange={e => setUserType(e.target.value)} value={userType}>
-                                <Radio value="therapist">{translations[language].isTherapist}</Radio>
-                                <Radio value="patient">{translations[language].isPatient}</Radio>
-                            </Radio.Group>
-                        </Form.Item>
-
-                        {userType === "patient" && (
-                            <Form.Item name="selectedTherapist">
-                                <Dropdown overlay={menu} trigger={['click']}>
-                                    <a href="selection" className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                        {selectedTherapist || 'Select Therapist'} <DownOutlined />
-                                    </a>
-                                </Dropdown>
-                            </Form.Item>
-                        )}
-                    </>
-                )}
-
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" block>{isLoginMode ? translations[language].login : translations[language].signUp}</Button>
-                </Form.Item>
-
-                <Form.Item className={styles["inline-elements"]}>
-                    <Button onClick={toggleLanguage} block>{translations[language].changeLanguage}</Button>
-                    <Button onClick={toggleLoginMode} block>{isLoginMode ? translations[language].goRegister : translations[language].alreadyUser}</Button>
-                </Form.Item>
-
-                <Form.Item className={styles["inline-elements"]}>
-                    <Checkbox name="rememberMe" defaultChecked={false}>
-                        {translations[language].rememberMe}
-                    </Checkbox>
-                    <Button type="link">{translations[language].forgotPassword}</Button>
-                </Form.Item>
-
-                <Form.Item>
-                    <GoogleOAuthProvider clientId="YOUR CLIENT ID">
-                        <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleFailure} />
-                    </GoogleOAuthProvider>
-                </Form.Item>
-            </Form>
-
+            {isLoginMode ? (
+                <LoginForm onUserLogin={onUserLogin}
+                    language={language}
+                    onToggleMode={toggleLoginMode}
+                    onLanguageChange={onLanguageChange}
+                    toggleLanguage={toggleLanguage}
+                    toggleLoginMode={toggleLoginMode}
+                    handleGoogleSuccess={handleGoogleSuccess}
+                    handleGoogleFailure={handleGoogleFailure}
+                />
+            ) : (
+                <RegisterForm onUserDetails={onUserDetails}
+                    language={language}
+                    onToggleMode={toggleLoginMode}
+                    onLanguageChange={onLanguageChange}
+                    toggleLanguage={toggleLanguage}
+                    toggleLoginMode={toggleLoginMode}
+                    handleGoogleSuccess={handleGoogleSuccess}
+                    handleGoogleFailure={handleGoogleFailure}
+                />
+            )}
         </div>
     )
 }

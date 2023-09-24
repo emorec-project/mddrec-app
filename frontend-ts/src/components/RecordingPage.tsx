@@ -5,6 +5,7 @@ import { RecordedSessions } from './RecordedSessions';
 import { Record } from './Record';
 import { UploadFiles } from './Upload';
 import {User} from "./login/User";
+import { getTranscript } from './transcriptGetter'
 
 interface Props {
   user: User;
@@ -41,7 +42,7 @@ export const RecordingPage: React.FC<Props> = ({user}) => {
       <UploadFiles 
         addSession={addSession}
       />
-      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} />
+      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} onButtonClick={getTranscript}/>
     </div>
   );
 };
