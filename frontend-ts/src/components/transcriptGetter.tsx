@@ -9,14 +9,11 @@ export const getTranscript = async (sessionId: string) => {
         }
     });
 
-    // console.log(response);
-    console.log("hi");
-    
+    console.log(response);    
 
     return (
         <h1>
-         {/* {response}  */}
-        hi
+         {response} 
         </h1>
       );
     // return response;
