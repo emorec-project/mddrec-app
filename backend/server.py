@@ -9,12 +9,12 @@ import data.mongo as repo
 import os
 import pathlib
 import os
-from login import register_user, login, oauth2_scheme, google_login
+from login import register_user, handle_login, oauth2_scheme, google_login
 from config_loader import *
 import os
 from pydantic import BaseModel
 from typing import Optional, List
-from user_types import UserRegister
+from app_types.user_types import UserRegister
 
 if os.getenv('PROFILE') == 'prod':
     from stt_model import get_stt_from_path
@@ -97,14 +97,13 @@ def save_file(file_to_save, path):
     with open(f'{path}.txt', 'w') as file:
         file.write(file_to_save)
 
-
 @app.post("/register/")
 async def register_endpoint(user: UserRegister):
     return await register_user(user)
 
 @app.post("/token/")
 async def login_endpoint(form_data: OAuth2PasswordRequestForm = Depends()):
-    return await login(form_data)
+    return await handle_login(form_data)
 
 @app.post("/google_login/")
 async def google_login_endpoint(token: str):

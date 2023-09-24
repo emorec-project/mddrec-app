@@ -10,3 +10,4 @@ dnspython
 requests
 bcrypt
 google-auth
+python-jose[cryptography]

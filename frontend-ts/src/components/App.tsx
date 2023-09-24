@@ -50,8 +50,8 @@ const App: React.FC = () => {
     };
     return (
       <div className="app">
-        <RecordingPage user={state.user!} />
-        {/* {state.isAuthenticated ? (
+        {/* <RecordingPage user={state.user!} /> */}
+        {state.isAuthenticated ? (
           <RecordingPage user={state.user!} />
         ) : (
           <LoginPage
@@ -59,10 +59,14 @@ const App: React.FC = () => {
             language={language}
             onLanguageChange={handleLanguageChange}
           />
-        )} */}
+        )}
       </div>
     );
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+  }
 
   return (
     <UserProvider>

@@ -6,7 +6,8 @@ export const uploadFile = (file: File, sessionId: string, callback: (url: string
     const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
     const fileSize = file.size;
     const chunksCount = Math.ceil(fileSize / CHUNK_SIZE);
-    
+    const token = localStorage.getItem("token");
+
     for (let i = 0; i < chunksCount; i++) {
         let start = CHUNK_SIZE * i;
         let end = CHUNK_SIZE * (i + 1);
@@ -21,7 +22,8 @@ export const uploadFile = (file: File, sessionId: string, callback: (url: string
 
         axios.post(`${config.backendURL}${config.uploadEndpoint}`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
             }
         }).then(response => {
             console.log(response);

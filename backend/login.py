@@ -1,11 +1,11 @@
-from pydantic import BaseModel
-from typing import Optional, List
-from user_types import UserRegister
+from datetime import timedelta
+from app_types.user_types import UserRegister, UserInDB
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import HTTPException, Depends
 # from passlib.context import CryptContext
 from pymongo import MongoClient
 from config_loader import *
+from jwt import create_access_token
 import bcrypt
 
 # Connect to your MongoDB database
@@ -20,10 +20,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 async def register_user(user: UserRegister):
     hashed_password = bcrypt.hashpw(user.details.password.encode('utf-8'), bcrypt.gensalt())
-    user.details.password = hashed_password
     
     # Convert user.details to dictionary before insertion
     user_details_dict = user.details.dict()
+    user_details_dict["hashed_password"] = hashed_password.decode('utf-8')  # Store the hashed password
+    del user_details_dict["password"]  # Remove the plain password from the dictionary
 
     if user.user_type == "therapist":
         # Check if user already exists
@@ -44,15 +45,27 @@ async def register_user(user: UserRegister):
     return {"status": "success"}
 
 
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = get_user_from_database(form_data.username)  # Your custom function to retrieve a user from your database
+def get_user_from_database(username: str) -> UserInDB:
+    user_data = users.find_one({"email": username})
+    if user_data:
+        return UserInDB(**user_data)
+    return None
+
+async def handle_login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = get_user_from_database(form_data.username)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
     if not bcrypt.checkpw(form_data.password.encode('utf-8'), user.hashed_password.encode('utf-8')):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
-    # If password is correct, return a token or any other logic you need
+    # Generate JWT
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 from google.oauth2 import id_token

@@ -77,19 +77,18 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
         const { email, password, userType, rememberMe } = values;
 
         if (onUserRegister && userType) {
-            // Hash the password
-            const hashedPassword = CryptoJS.SHA256(password).toString();
+            const clientSideHashedPassword = CryptoJS.SHA256(password).toString();
             try {
                 const response = await axios.post(`${config.backendURL}${config.registerEndpoint}`, {
                     user_type: userType,
                     details: {
                         email: email,
-                        password: hashedPassword,
+                        password: password,
                         selectedTherapist: selectedTherapist
                     }
                 });
                 // Call onUserRegister after successful registration
-                // onUserRegister(userType, { email, password: hashedPassword });
+                // onUserRegister(userType, { email, password: password });
             } catch (error) {
                 message.error("Error during registration");
             }
@@ -104,11 +103,13 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
         const password = values.password;
 
         try {
-            const response = await axios.post(`${config.backendURL}${config.tokenEndpoint}`, {
-                username: email,
-                password
-            });
-            // Here you can save the token to local storage or state and navigate the user to another page
+            const form_data = new FormData()
+
+            form_data.append("username", email)
+            form_data.append("password", password)
+    
+            const response = await axios.post(`${config.backendURL}${config.tokenEndpoint}`, form_data);
+            localStorage.setItem("token", response.data.access_token);
         } catch (error) {
             message.error("Error during login");
         }
