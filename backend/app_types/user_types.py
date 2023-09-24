@@ -1,18 +1,18 @@
 from pydantic import BaseModel
-from typing import Optional, List
-
+from typing import Literal, Optional, List
+    
 class UserDetails(BaseModel):
+    user_type: Literal['therapist', 'patient']
     email: str
     password: str
-    selectedTherapist: Optional[str]
+    selected_therapist: Optional[str] = None
 
-class UserRegister(BaseModel):
-    user_type: str
-    details: UserDetails
 
 class UserInDB(BaseModel):
     email: str
     hashed_password: str
+    user_type: Literal['therapist', 'patient']
+    selected_therapist: Optional[str] = None
 
     class Config:
         extra = "ignore"

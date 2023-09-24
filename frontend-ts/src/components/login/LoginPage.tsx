@@ -5,12 +5,21 @@ import { Input, Button, Form, Checkbox, Radio, Dropdown, Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import styles from '../../style/LoginPage.module.css';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { message } from 'antd';
 import config from '../../config/config';
+import { User } from './User';
+
+interface UserDetails {
+    user_type: 'therapist' | 'patient';
+    email: string;
+    password: string;
+    selected_therapist?: string;
+}
 
 interface Props {
-    onUserRegister?: (userType: 'therapist' | 'patient', details: any) => void;
+    onUserDetails: (user: User) => void;
+    onUserLogin: (user: User) => void;
     language: 'en' | 'he';
     onLanguageChange?: (lang: 'en' | 'he') => void;
 }
@@ -46,7 +55,7 @@ const translations = {
     }
 }
 
-export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguageChange }) => {
+export const LoginPage: React.FC<Props> = ({ onUserDetails, onUserLogin, language, onLanguageChange }) => {
     const [userType, setUserType] = useState<'therapist' | 'patient'>();
     const [selectedTherapist, setSelectedTherapist] = useState('');
     const [isLoginMode, setIsLoginMode] = useState(false);
@@ -73,60 +82,79 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
     );
 
     const handleRegister = async () => {
-        const values = form.getFieldsValue();
-        const { email, password, userType, rememberMe } = values;
+        try {
+            const values = await form.validateFields();
+            const { email, password, userType, rememberMe } = values;
 
-        if (onUserRegister && userType) {
-            const clientSideHashedPassword = CryptoJS.SHA256(password).toString();
-            try {
-                const response = await axios.post(`${config.backendURL}${config.registerEndpoint}`, {
+            if (userType) {
+                const userDetails: UserDetails = {
                     user_type: userType,
-                    details: {
-                        email: email,
-                        password: password,
-                        selectedTherapist: selectedTherapist
-                    }
-                });
-                // Call onUserRegister after successful registration
-                // onUserRegister(userType, { email, password: password });
-            } catch (error) {
-                message.error("Error during registration");
+                    email: email,
+                    password: password
+                };
+
+                if (userType === 'patient') {
+                    userDetails.selected_therapist = selectedTherapist;
+                }
+
+                const response: AxiosResponse = await axios.post(
+                    `${config.backendURL}${config.registerEndpoint}`,
+                    userDetails
+                );
+                const registeredUser: User = {
+                    email: email,
+                    language: language,
+                    userType: userType,
+                    therapistName: selectedTherapist
+                };
+                onUserDetails(registeredUser);
+            } else {
+                message.error('User type is not selected');
             }
-        } else {
-            message.error("User type is not selected");
+        } catch (error) {
+            message.error('Error during registration');
         }
-    }
+    };
 
     const handleLogin = async () => {
-        const values = form.getFieldsValue();
-        const email = values.email;
-        const password = values.password;
-
         try {
-            const form_data = new FormData()
+            const values = await form.validateFields();
+            const email = values.email;
+            const password = values.password;
 
-            form_data.append("username", email)
-            form_data.append("password", password)
-    
-            const response = await axios.post(`${config.backendURL}${config.tokenEndpoint}`, form_data);
-            localStorage.setItem("token", response.data.access_token);
+            const form_data = new FormData();
+            form_data.append('username', email);
+            form_data.append('password', password);
+
+            const response: AxiosResponse = await axios.post(
+                `${config.backendURL}${config.tokenEndpoint}`,
+                form_data
+            );
+            localStorage.setItem('token', response.data.access_token);
+            const loggedUser: User = {
+                email: email,
+                language: language,
+                userType: response.data.userType
+            };
+            onUserLogin(loggedUser);
         } catch (error) {
-            message.error("Error during login");
+            message.error('Error during login');
         }
-    }
+    };
 
     const handleGoogleSuccess = async (response: any) => {
-        // We'll get the user details from Google and can send them to your backend to create or authenticate a user.
         const userDetails = {
             email: response.profileObj.email,
-            googleId: response.profileObj.googleId
+            googleId: response.profileObj.googleId,
         };
         try {
-            const res = await axios.post(`${config.backendURL}${config.registerEndpoint}`, userDetails);
+            const res: AxiosResponse = await axios.post(
+                `${config.backendURL}${config.registerEndpoint}`,
+                userDetails
+            );
             console.log(res.data);
-            // Here you can save the token to local storage or state and navigate the user to another page
         } catch (error) {
-            message.error("Error during registration with Google");
+            message.error('Error during registration with Google');
         }
     };
 

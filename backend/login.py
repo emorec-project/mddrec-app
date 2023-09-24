@@ -1,5 +1,5 @@
 from datetime import timedelta
-from app_types.user_types import UserRegister, UserInDB
+from app_types.user_types import UserDetails, UserInDB
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import HTTPException, Depends
 # from passlib.context import CryptContext
@@ -13,18 +13,16 @@ client = MongoClient(MONGO_URL)
 db = client[MONGO_DB_NAME]
 users = db[MONGO_USERS_COLLECTION]
 
-# Initialize password hasher
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-async def register_user(user: UserRegister):
-    hashed_password = bcrypt.hashpw(user.details.password.encode('utf-8'), bcrypt.gensalt())
+async def register_user(user: UserDetails):
+    hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
     
     # Convert user.details to dictionary before insertion
-    user_details_dict = user.details.dict()
+    user_details_dict = user.dict()
     user_details_dict["hashed_password"] = hashed_password.decode('utf-8')  # Store the hashed password
     del user_details_dict["password"]  # Remove the plain password from the dictionary
+    user_details_dict = {k: v for k, v in user_details_dict.items() if v is not None}
 
     if user.user_type == "therapist":
         # Check if user already exists
@@ -34,11 +32,16 @@ async def register_user(user: UserRegister):
         # Insert the new user into the database
         result = users.insert_one(user_details_dict)
 
-        # Return a response
         return {"ok": bool(result.inserted_id)}
-    elif user.user_type == "patient":
-        # Here you would typically perform some kind of operation to add the patient to your database.
-        pass
+    elif user.user_type == "patient":       
+        # Check if user already exists
+        if users.find_one({'email': user_details_dict['email']}):
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Insert the new user into the database
+        result = users.insert_one(user_details_dict)
+
+        return {"ok": bool(result.inserted_id)}
     else:
         raise HTTPException(status_code=400, detail="Invalid user type")
 
@@ -53,17 +56,13 @@ def get_user_from_database(username: str) -> UserInDB:
 
 async def handle_login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = get_user_from_database(form_data.username)
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
-
-    if not bcrypt.checkpw(form_data.password.encode('utf-8'), user.hashed_password.encode('utf-8')):
+    if not user or not bcrypt.checkpw(form_data.password.encode('utf-8'), user.hashed_password.encode('utf-8')):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
     # Generate JWT
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
+        data={"sub": user.email, "userType": user.user_type},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
 
     return {"access_token": access_token, "token_type": "bearer"}
 

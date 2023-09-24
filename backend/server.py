@@ -14,7 +14,7 @@ from config_loader import *
 import os
 from pydantic import BaseModel
 from typing import Optional, List
-from app_types.user_types import UserRegister
+from app_types.user_types import UserDetails
 
 if os.getenv('PROFILE') == 'prod':
     from stt_model import get_stt_from_path
@@ -98,7 +98,7 @@ def save_file(file_to_save, path):
         file.write(file_to_save)
 
 @app.post("/register/")
-async def register_endpoint(user: UserRegister):
+async def register_endpoint(user: UserDetails):
     return await register_user(user)
 
 @app.post("/token/")

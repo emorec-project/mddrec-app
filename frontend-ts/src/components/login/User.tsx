@@ -1,5 +1,6 @@
 export type User = {
-    name: string;
+    email: string;
+    name?: string;
     language: 'en' | 'he';
     userType: 'therapist' | 'patient';
     therapistName?: string;

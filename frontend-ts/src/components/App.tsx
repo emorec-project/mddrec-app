@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
 import { RecordingPage } from "./RecordingPage";
 import { LoginPage } from "./login/LoginPage";
 import { User } from "./login/User";
 import config from "../config/configLoader";
-import { UserProvider, useAuth } from "./login/authContext"; // update the path accordingly
+import { UserProvider, useAuth } from "./login/authContext";
+import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 const App: React.FC = () => {
   const [language, setLanguage] = useState<"en" | "he">("en"); // default to 'en'
@@ -16,46 +17,38 @@ const App: React.FC = () => {
 
   const InnerApp: React.FC = () => {
     const { state, dispatch } = useAuth();
-    const handleUserLogin = async (
-      userType: "therapist" | "patient",
-      details: any
-    ) => {
-      try {
-        const response = await axios.post(`${config.backendURL}/login`, {
-          email: details.email,
-          password: details.password,
-          userType: userType,
-        });
 
-        if (response.status === 200) {
-          const userData = response.data;
-          dispatch({
-            type: "LOGIN",
-            payload: {
-              name: userData.name,
-              language: userData.language,
-              userType: userData.userType,
-              therapistName:
-                userType === "patient" ? userData.therapistName : undefined,
-              patients:
-                userType === "therapist" ? userData.patients : undefined,
-            },
-          });
-        } else {
-          console.error("Login failed:", response.data);
-        }
-      } catch (error) {
-        console.error("An error occurred during login:", error);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      if (state.isAuthenticated) {
+        navigate('/recording');  // Navigate to the RecordingPage
+      } else {
+        navigate('/login');
       }
+    }, [state.isAuthenticated, navigate]);
+
+    const handleUserLogin = (userData: User) => {
+      dispatch({
+        type: "LOGIN",
+        payload: {
+          email: userData.email,
+          name: userData.name,
+          language: userData.language,
+          userType: userData.userType,
+          therapistName: userData.userType === "patient" ? userData.therapistName : undefined,
+          patients: userData.userType === "therapist" ? userData.patients : undefined,
+        },
+      });
     };
     return (
       <div className="app">
-        {/* <RecordingPage user={state.user!} /> */}
         {state.isAuthenticated ? (
           <RecordingPage user={state.user!} />
         ) : (
           <LoginPage
-            onUserRegister={handleUserLogin}
+            onUserDetails={handleUserLogin}
+            onUserLogin={handleUserLogin}
             language={language}
             onLanguageChange={handleLanguageChange}
           />
@@ -69,9 +62,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <UserProvider>
-      <InnerApp />
-    </UserProvider>
+    <BrowserRouter>
+      <UserProvider>
+        <InnerApp />
+      </UserProvider>
+    </BrowserRouter>
   );
 };
 
