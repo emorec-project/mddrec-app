@@ -18,7 +18,9 @@ interface Props {
 const translations = {
     en: {
         signUp: 'Sign Up',
-        login: 'Already a user? Login',
+        goRegister: 'Don\'t have an account? Sign Up!',
+        alreadyUser: 'Already a user? Login',
+        login: 'Login',
         email: 'Email',
         password: 'Password',
         isTherapist: "Are you a therapist?",
@@ -30,7 +32,9 @@ const translations = {
     },
     he: {
         signUp: 'הרשמה',
-        login: 'כבר משתמש? התחבר',
+        goRegister: 'אין לך משתמש? הירשם',
+        alreadyUser: 'כבר משתמש? התחבר',
+        login: 'התחבר',
         email: 'דוא"ל',
         password: 'סיסמה',
         isTherapist: "האם הינך מטפל?",
@@ -45,6 +49,7 @@ const translations = {
 export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguageChange }) => {
     const [userType, setUserType] = useState<'therapist' | 'patient'>();
     const [selectedTherapist, setSelectedTherapist] = useState('');
+    const [isLoginMode, setIsLoginMode] = useState(false);
     const [form] = Form.useForm();
 
     const emailRules = [
@@ -54,6 +59,10 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
             message: translations[language].invalidEmail,
         },
     ];
+
+    const toggleLoginMode = () => {
+        setIsLoginMode(!isLoginMode);
+    };
 
     const menu = (
         <Menu onClick={(e) => setSelectedTherapist(e.key.toString())}>
@@ -79,7 +88,8 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
                         selectedTherapist: selectedTherapist
                     }
                 });
-                console.log(response.data);
+                // Call onUserRegister after successful registration
+                // onUserRegister(userType, { email, password: hashedPassword });
             } catch (error) {
                 message.error("Error during registration");
             }
@@ -133,7 +143,7 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
 
     return (
         <div dir={language === 'he' ? 'rtl' : 'ltr'} className={`${styles["login-container"]} ${language === 'he' ? styles.rtl : ''}`}>
-            <Form form={form} style={{ marginBottom: "0px" }} onFinish={handleRegister} layout="vertical">
+            <Form form={form} style={{ marginBottom: "0px" }} onFinish={isLoginMode ? handleLogin : handleRegister} layout="vertical">
                 <Form.Item name="email" rules={emailRules}>
                     <Input placeholder={translations[language].email} />
                 </Form.Item>
@@ -142,30 +152,34 @@ export const LoginPage: React.FC<Props> = ({ onUserRegister, language, onLanguag
                     <Input.Password placeholder={translations[language].password} />
                 </Form.Item>
 
-                <Form.Item name="userType">
-                    <Radio.Group onChange={e => setUserType(e.target.value)} value={userType}>
-                        <Radio value="therapist">{translations[language].isTherapist}</Radio>
-                        <Radio value="patient">{translations[language].isPatient}</Radio>
-                    </Radio.Group>
-                </Form.Item>
+                {!isLoginMode && (
+                    <>
+                        <Form.Item name="userType">
+                            <Radio.Group onChange={e => setUserType(e.target.value)} value={userType}>
+                                <Radio value="therapist">{translations[language].isTherapist}</Radio>
+                                <Radio value="patient">{translations[language].isPatient}</Radio>
+                            </Radio.Group>
+                        </Form.Item>
 
-                {userType === "patient" && (
-                    <Form.Item name="selectedTherapist">
-                        <Dropdown overlay={menu} trigger={['click']}>
-                            <a href="selection" className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                {selectedTherapist || 'Select Therapist'} <DownOutlined />
-                            </a>
-                        </Dropdown>
-                    </Form.Item>
+                        {userType === "patient" && (
+                            <Form.Item name="selectedTherapist">
+                                <Dropdown overlay={menu} trigger={['click']}>
+                                    <a href="selection" className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                        {selectedTherapist || 'Select Therapist'} <DownOutlined />
+                                    </a>
+                                </Dropdown>
+                            </Form.Item>
+                        )}
+                    </>
                 )}
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" block>{translations[language].signUp}</Button>
+                    <Button type="primary" htmlType="submit" block>{isLoginMode ? translations[language].login : translations[language].signUp}</Button>
                 </Form.Item>
 
                 <Form.Item className={styles["inline-elements"]}>
                     <Button onClick={toggleLanguage} block>{translations[language].changeLanguage}</Button>
-                    <Button onClick={handleLogin} block>{translations[language].login}</Button>
+                    <Button onClick={toggleLoginMode} block>{isLoginMode ? translations[language].goRegister : translations[language].alreadyUser}</Button>
                 </Form.Item>
 
                 <Form.Item className={styles["inline-elements"]}>

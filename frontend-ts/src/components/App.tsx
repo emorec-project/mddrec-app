@@ -50,7 +50,8 @@ const App: React.FC = () => {
     };
     return (
       <div className="app">
-        {state.isAuthenticated ? (
+        <RecordingPage user={state.user!} />
+        {/* {state.isAuthenticated ? (
           <RecordingPage user={state.user!} />
         ) : (
           <LoginPage
@@ -58,7 +59,7 @@ const App: React.FC = () => {
             language={language}
             onLanguageChange={handleLanguageChange}
           />
-        )}
+        )} */}
       </div>
     );
   };
