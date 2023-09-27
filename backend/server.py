@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from app_types.user_types import UserDetails
 from data import mongo
-from stt_transcript import get_transript_file
+from stt_transcript import get_transript_file, get_video_file
 
 if os.getenv('PROFILE') == 'prod':
     from stt_model import get_stt_from_path
