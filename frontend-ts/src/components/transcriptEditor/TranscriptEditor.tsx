@@ -21,11 +21,10 @@ const TEditor = ({transcriptJson,videoLink,videoTitle}) => {
     isTextEditable: true,
     spellCheck: false,
     sttType: "bbckaldi",
-    // analyticsEvents: [],
     title: videoTitle,
     fileName: "",
     autoSaveData: {},
-    autoSaveContentType: "draftjs",
+    autoSaveContentType: "bbckaldi",
     autoSaveExtension: "json"
   })
   const transcriptEditorRef = React.createRef()
@@ -36,7 +35,7 @@ const TEditor = ({transcriptJson,videoLink,videoTitle}) => {
       newData.transcriptData = transcriptDataFromLocalStorage
       newData.mediaUrl = DEMO_MEDIA_URL
       newData.title = DEMO_TITLE
-      newData.sttType = 'draftjs'
+      newData.sttType = 'bbckaldi'
       //@ts-ignore
       setData(newData);
     }
@@ -112,12 +111,33 @@ const TEditor = ({transcriptJson,videoLink,videoTitle}) => {
     setData(newData);
   };
 
+  
+
+
+  // const exportTranscript = () => {
+  //   console.log("export");
+  //   // eslint-disable-next-line react/no-string-refs
+  //   //@ts-ignore
+  //   const { data_, ext } = transcriptEditorRef.current.getEditorContent(
+  //     data.exportFormat
+  //   );
+  //   let tmpData = data_;
+  //   if (ext === "json") {
+  //     tmpData = JSON.stringify(data_, null, 2);
+  //   }
+  //   if (ext !== "docx") {
+  //     //@ts-ignore
+  //     download(tmpData, `${data_.mediaUrl}.${ext}`);
+  //   }
+  // };
+
   // https://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
   const download = (content, filename, contentType) => {
     console.log("download");
     const type = contentType || "application/octet-stream";
     const link = document.createElement("a");
     const blob = new Blob([content], { type: type });
+
     link.href = window.URL.createObjectURL(blob);
     link.download = filename;
     // Firefox fix - cannot do link.click() if it's not attached to DOM in firefox
@@ -131,6 +151,8 @@ const TEditor = ({transcriptJson,videoLink,videoTitle}) => {
     localStorage.clear();
     console.info("Cleared local storage.");
   };
+
+ 
 
   const handleChangeTranscriptTitle = newTitle => {
     const newData = {...data}
@@ -148,15 +170,14 @@ const TEditor = ({transcriptJson,videoLink,videoTitle}) => {
 
   const handleAutoSaveChanges = newAutoSaveData => {
     // console.log("handleAutoSaveChanges", newAutoSaveData);
+    const { data_, ext } = newAutoSaveData;
     const newData = {...data}
-    newData.autoSaveData = newAutoSaveData.data
-    newData.autoSaveExtension = newAutoSaveData.ext
+    newData.autoSaveData = data_
+    newData.autoSaveExtension = ext
     //@ts-ignore
     setData(newData);
-    console.log(newAutoSaveData.data)
     // Saving to local storage 
-    //TODO: parse newData and save it the the mongo doc
-    // localSave(newAutoSaveData.data.mediaUrl, newAutoSaveData.data.fileName, newAutoSaveData.data);
+    localSave(data_.mediaUrl, data_.fileName, data_);
   };
 
   return (
@@ -271,7 +292,6 @@ const TEditor = ({transcriptJson,videoLink,videoTitle}) => {
         isEditable={data.isTextEditable}
         spellCheck={data.spellCheck}
         sttJsonType={data.sttType}
-        // handleAnalyticsEvents={handleAnalyticsEvents}
         title={data.title}
         ref={transcriptEditorRef}
         handleAutoSaveChanges={handleAutoSaveChanges}

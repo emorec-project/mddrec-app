@@ -6,7 +6,7 @@ const DEMO_TITLE ="TED Talk | Kate Darling - Why we have an emotional connection
 const DEMO_MEDIA_URL = "https://download.ted.com/talks/KateDarling_2018S-950k.mp4"
 
 
-export const getTranscript = async (sessionId: string) => {
+export const getTranscript = (sessionId: string) => {
     // //`http://localhost:8000/get_video_by_id/${sessionId}`
     // const transcript_response = await axios.get(`http://localhost:8000/get_transcript_by_id/fb04aea7-8b8e-4d59-ad04-9e92b4691b8d.mp4`, {
     //     headers: {
