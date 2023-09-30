@@ -20,6 +20,7 @@ export const RecordingPage: React.FC<Props> = ({user}) => {
   const [recordingAudio, setRecordingAudio] = useState(false);
   const [sessions, setSessions] = useState<string[]>([]);
   const [transcriptEditorWindow, setTranscriptEditorWindow] = useState(false);
+  const [currentSessionId,setCurrentSessionId] = useState('')
   const addSession = (url: string) => {
     console.log("A new session has been recorded", url)
     setSessions(prev => [...prev, url]);
@@ -46,8 +47,10 @@ export const RecordingPage: React.FC<Props> = ({user}) => {
       <UploadFiles 
         addSession={addSession}
       />
-      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} onButtonClick={()=>setTranscriptEditorWindow(prev => !prev)}/>
-      {transcriptEditorWindow && getTranscript('')}
+      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} onButtonClick={(session:string)=>{setTranscriptEditorWindow(prev => !prev);
+      setCurrentSessionId(session);
+      }}/>
+      {transcriptEditorWindow && getTranscript(currentSessionId)}
     </div>
 
   );
