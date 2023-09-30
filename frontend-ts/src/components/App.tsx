@@ -43,7 +43,7 @@ const App: React.FC = () => {
     };
     return (
       <div className="app">
-        {state.isAuthenticated ? (
+        {true ? (
           <RecordingPage user={state.user!} />
         ) : (
           <LoginPage

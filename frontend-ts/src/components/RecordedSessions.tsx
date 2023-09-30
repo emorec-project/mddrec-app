@@ -18,7 +18,7 @@ export const RecordedSessions: React.FC<RecordedSessionsProps> = ({ sessions, re
                 <audio preload="none" src={session} controls></audio> : 
                 <video preload="none" src={session} controls></video>
               }
-              <button onClick={() => onButtonClick(session)}>Get Doc</button>
+              <button onClick={() => onButtonClick(session)}>Open in Transcript Editor</button>
             </div>
           ))}
         </Collapse.Panel>

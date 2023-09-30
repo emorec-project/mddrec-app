@@ -7,22 +7,22 @@ import {
   isPresentInLocalStorage,
   localSave
 } from "./local-storage.ts";
-import DEMO_TRANSCRIPT from "../../data/transcriptExampleData.json"
 //@ts-ignore
 import style from "./TranscriptEditor.css";
+import DEMO_TRANSCRIPT from "../../data/transcriptExampleData.json"
 
 const DEMO_TITLE ="TED Talk | Kate Darling - Why we have an emotional connection to robots"
 const DEMO_MEDIA_URL = "https://download.ted.com/talks/KateDarling_2018S-950k.mp4"
 
-const TEditor = () => {
+const TEditor = ({transcriptJson,videoLink,videoTitle}) => {
   const [data,setData] = useState({
-    transcriptData: null,
-    mediaUrl: null,
+    transcriptData: transcriptJson,
+    mediaUrl: videoLink,
     isTextEditable: true,
     spellCheck: false,
     sttType: "bbckaldi",
     // analyticsEvents: [],
-    title: "",
+    title: videoTitle,
     fileName: "",
     autoSaveData: {},
     autoSaveContentType: "draftjs",
