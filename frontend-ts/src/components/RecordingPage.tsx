@@ -5,6 +5,7 @@ import { RecordedSessions } from './RecordedSessions';
 import { Record } from './Record';
 import { UploadFiles } from './Upload';
 import {User} from "./login/User";
+import { v4 as uuidv4 } from 'uuid';
 import { getTranscript } from './transcriptGetter'
 import TEditor from './transcriptEditor/TranscriptEditor';
 import DEMO_TRANSCRIPT from "../data/transcriptExampleData.json"
@@ -18,12 +19,15 @@ interface Props {
 export const RecordingPage: React.FC<Props> = ({user}) => {
   const [capturing, setCapturing] = useState(false);
   const [recordingAudio, setRecordingAudio] = useState(false);
-  const [sessions, setSessions] = useState<string[]>([]);
+  const [sessions, setSessions] = useState<object[]>([]);
   const [transcriptEditorWindow, setTranscriptEditorWindow] = useState(false);
   const [currentSessionId,setCurrentSessionId] = useState('')
   const addSession = (url: string) => {
     console.log("A new session has been recorded", url)
-    setSessions(prev => [...prev, url]);
+    const generatedId = uuidv4();
+    const sessionObject = { id: generatedId, url };
+    console.log(sessionObject);
+    setSessions(prev => [...prev, sessionObject]);
   };
 
   const toggleRecordingMode = () => {
@@ -31,7 +35,7 @@ export const RecordingPage: React.FC<Props> = ({user}) => {
   }
   useEffect(() => {
     return () => {
-        sessions.forEach(URL.revokeObjectURL);
+        sessions.forEach(session => URL.revokeObjectURL);        
     };
 }, []);
 
@@ -47,8 +51,11 @@ export const RecordingPage: React.FC<Props> = ({user}) => {
       <UploadFiles 
         addSession={addSession}
       />
-      <RecordedSessions sessions={sessions} recordingAudio={recordingAudio} onButtonClick={(session:string)=>{setTranscriptEditorWindow(prev => !prev);
-      setCurrentSessionId(session);
+      <RecordedSessions 
+        sessions={sessions}         
+        recordingAudio={recordingAudio} 
+        onButtonClick={(session)=>{setTranscriptEditorWindow(prev => !prev);
+        setCurrentSessionId(session.id);
       }}/>
       {transcriptEditorWindow && getTranscript(currentSessionId)}
     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Collapse } from 'antd';
 
 interface RecordedSessionsProps {
-  sessions: string[];
+  sessions: object[];
   recordingAudio: boolean;
   onButtonClick;
 }
@@ -15,8 +15,8 @@ export const RecordedSessions: React.FC<RecordedSessionsProps> = ({ sessions, re
           {sessions.map((session, index) => (
             <div key={index}>
               {recordingAudio ? 
-                <audio preload="none" src={session} controls></audio> : 
-                <video preload="none" src={session} controls></video>
+                <audio preload="none" src={session['url']} controls></audio> : 
+                <video preload="none" src={session['url']} controls></video>
               }
               <button onClick={() => onButtonClick(session)}>Toggle Transcript Editor</button>
             </div>

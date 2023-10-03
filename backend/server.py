@@ -57,6 +57,10 @@ async def find_doc_by_id(doc_id: str):
 async def get_transcript_by_id(doc_id: str):
     return get_transript_file(doc_id)
 
+@app.get("/get_video_by_id/{video_id}")
+async def get_video_by_id(video_id: str):
+    return get_video_file(video_id)
+
 @app.post("/blobs_manager/upload/")
 async def upload(file: UploadFile = Form(...),
                  filename: str = Form(...),
