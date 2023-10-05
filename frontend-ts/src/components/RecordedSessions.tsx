@@ -4,9 +4,10 @@ import { Collapse } from 'antd';
 interface RecordedSessionsProps {
   sessions: string[];
   recordingAudio: boolean;
+  onButtonClick;
 }
 
-export const RecordedSessions: React.FC<RecordedSessionsProps> = ({ sessions, recordingAudio }) => {
+export const RecordedSessions: React.FC<RecordedSessionsProps> = ({ sessions, recordingAudio, onButtonClick }) => {
   return (
     <div className='sessionsContainer'>
       <Collapse>
@@ -17,6 +18,7 @@ export const RecordedSessions: React.FC<RecordedSessionsProps> = ({ sessions, re
                 <audio preload="none" src={session} controls></audio> : 
                 <video preload="none" src={session} controls></video>
               }
+              <button onClick={() => onButtonClick(session)}>Get Doc</button>
             </div>
           ))}
         </Collapse.Panel>
