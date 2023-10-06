@@ -6,25 +6,26 @@ import { uploadFile } from './fileUploader';
 import { v4 as uuidv4 } from 'uuid';
 
 interface UploadFilesProps {
-  addSession: (url: string) => void;
+  addSession: (id:string, url: string) => void;
 }
 
 export const UploadFiles: React.FC<UploadFilesProps> = ({ addSession }) => {
   const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const generatedId = uuidv4();
 
   const handleUpload = (file: any): false => {
     const fileType = file.type.split('/')[0];
 
     if (fileType === 'audio') {
       setUploadedAudio(file);
-      uploadFile(file, uuidv4(), (url) => {
-          addSession(url);
+      uploadFile(file, generatedId, (url) => {
+          addSession(generatedId, url);
       });
     } else if (fileType === 'video') {
       setUploadedFile(file);
-      uploadFile(file, uuidv4(), (url) => {
-          addSession(url);
+      uploadFile(file, generatedId, (url) => {
+          addSession(generatedId, url);
       });
     }
 
@@ -34,12 +35,12 @@ export const UploadFiles: React.FC<UploadFilesProps> = ({ addSession }) => {
   useEffect(() => {
     if (uploadedFile) {
       const url = URL.createObjectURL(uploadedFile);
-      addSession(url);
+      addSession(generatedId, url);
     }
 
     if (uploadedAudio) {
       const url = URL.createObjectURL(uploadedAudio);
-      addSession(url);
+      addSession(generatedId, url);
     }
   }, [uploadedFile, uploadedAudio]);
 

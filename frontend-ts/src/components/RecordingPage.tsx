@@ -22,11 +22,9 @@ export const RecordingPage: React.FC<Props> = ({user}) => {
   const [sessions, setSessions] = useState<object[]>([]);
   const [transcriptEditorWindow, setTranscriptEditorWindow] = useState(false);
   const [currentSessionId,setCurrentSessionId] = useState('')
-  const addSession = (url: string) => {
+  const addSession = (id: string, url: string) => {
     console.log("A new session has been recorded", url)
-    const generatedId = uuidv4();
-    const sessionObject = { id: generatedId, url };
-    console.log(sessionObject);
+    const sessionObject = { id, url };
     setSessions(prev => [...prev, sessionObject]);
   };
 

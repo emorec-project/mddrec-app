@@ -9,7 +9,7 @@ interface RecordProps {
   setCapturing: (capturing: boolean) => void;
   recordingAudio: boolean;
   toggleRecordingMode: () => void;
-  addSession: (url: string) => void;
+  addSession: (id: string, url: string) => void;
 }
 
 export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordingAudio, toggleRecordingMode, addSession }) => {
@@ -42,7 +42,7 @@ export const Record: React.FC<RecordProps> = ({ capturing, setCapturing, recordi
         const blob = new Blob(recordedChunks, { type: recordingAudio ? 'audio/mp3' : 'video/mp4' });
         const file = blobToFile(blob, recordingAudio ? "audio.mp3" : "video.mp4");
         const url = URL.createObjectURL(blob);
-        addSession(url);
+        addSession(sessionId, url);
 
         // Upload recorded chunks to the backend
         uploadFile(file, sessionId, (uploadedUrl) => {
